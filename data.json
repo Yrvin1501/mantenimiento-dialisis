@@ -543,15 +543,6 @@
       "notas": ""
     },
     {
-      "id": 101,
-      "_order": 100,
-      "hospital": "Soria",
-      "tipo": "Cambio filtros Pretratamiento",
-      "fecha": "2026-11-05",
-      "fechaStr": "2026-11-05",
-      "notas": ""
-    },
-    {
       "id": 102,
       "_order": 101,
       "hospital": "MIGUEL SERVET 6ª",
