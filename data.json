@@ -381,15 +381,6 @@
       "notas": ""
     },
     {
-      "id": 46,
-      "_order": 45,
-      "hospital": "DIALBILBO",
-      "tipo": "CTS Pretratamiento",
-      "fecha": "2027-03-26",
-      "fechaStr": "2027-03-26",
-      "notas": "sin detalle"
-    },
-    {
       "id": 47,
       "_order": 46,
       "hospital": "Policlinica",
