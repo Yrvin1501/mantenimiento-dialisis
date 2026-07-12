@@ -988,24 +988,39 @@ resetBtn.textContent = '↺ Restaurar original';
 resetBtn.onclick = resetToDefault;
 document.querySelector('.export-row').appendChild(resetBtn);
 
-(async () => {
-  // Step 1: Always show initial Excel data immediately (never blank)
-  loadInitialData();
-  buildFilters();
-  render();
+window.onerror = function(msg, src, line, col, err) {
+  document.body.insertAdjacentHTML('afterbegin',
+    `<div style="background:red;color:#fff;padding:12px;font-size:13px;position:fixed;top:0;left:0;right:0;z-index:9999">
+      <strong>Error JS:</strong> ${msg} (línea ${line})<br>${err ? err.stack : ''}
+    </div>`);
+};
 
-  // Step 2: Try to load saved data (GitHub API or localStorage)
-  const restored = await loadFromStorage();
-  if (restored) {
+(async () => {
+  try {
+    // Step 1: Always show initial Excel data immediately (never blank)
+    loadInitialData();
     buildFilters();
     render();
-  } else {
-    // No saved data anywhere — if token present, push initial data to GitHub
-    if (getToken()) await saveToStorage();
-  }
 
-  // Step 3: Show sync banner if no token
-  if (!getToken()) showSyncBanner();
+    // Step 2: Try to load saved data (GitHub API or localStorage)
+    const restored = await loadFromStorage();
+    if (restored) {
+      buildFilters();
+      render();
+    } else {
+      if (getToken()) await saveToStorage();
+    }
+
+    if (!getToken()) showSyncBanner();
+  } catch(e) {
+    document.body.insertAdjacentHTML('afterbegin',
+      `<div style="background:red;color:#fff;padding:12px;font-size:13px;position:fixed;top:0;left:0;right:0;z-index:9999">
+        <strong>Error en arranque:</strong> ${e.message}<br><pre style="font-size:11px">${e.stack}</pre>
+      </div>`);
+    console.error('Boot error:', e);
+    // Last resort: force render with initial data
+    try { loadInitialData(); buildFilters(); render(); } catch(e2) {}
+  }
 })();
 
 
