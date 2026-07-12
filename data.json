@@ -1099,15 +1099,6 @@
       "fecha": "2024-12-23",
       "fechaStr": "2024-12-23",
       "notas": "Vencida - revisar"
-    },
-    {
-      "id": 157,
-      "_order": 156,
-      "hospital": "Santiago (AquaC)",
-      "tipo": "Carbón",
-      "fecha": "2023-10-25",
-      "fechaStr": "2023-10-25",
-      "notas": "Vencida - revisar"
     }
   ]
 }
