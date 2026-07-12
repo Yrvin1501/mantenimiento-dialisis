@@ -273,15 +273,6 @@
       "notas": ""
     },
     {
-      "id": 33,
-      "_order": 32,
-      "hospital": "DIALBILBO",
-      "tipo": "Cambio Carbón 2",
-      "fecha": "2026-07-03",
-      "fechaStr": "2026-07-03",
-      "notas": "lo logre"
-    },
-    {
       "id": 34,
       "_order": 33,
       "hospital": "Policlinica",
