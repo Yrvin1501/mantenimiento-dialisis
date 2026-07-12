@@ -75,15 +75,6 @@
       "notas": ""
     },
     {
-      "id": 10,
-      "_order": 9,
-      "hospital": "Logroño",
-      "tipo": "Desinfección RO1",
-      "fecha": "2026-06-05",
-      "fechaStr": "2026-06-05",
-      "notas": ""
-    },
-    {
       "id": 12,
       "_order": 11,
       "hospital": "ALCAÑIZ",
