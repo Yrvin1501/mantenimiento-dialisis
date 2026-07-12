@@ -1,3 +1,165 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Mantenimiento – Control de Vencimientos</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Arial, sans-serif; background: #f4f6fa; color: #222; font-size: 14px; }
+    header { background: #003366; color: #fff; padding: 20px; display: flex; justify-content: space-between; align-items: center; }
+    h1 { font-size: 20px; }
+    .container { max-width: 1200px; margin: 20px auto; padding: 0 20px; }
+    .kpi-container { display: flex; gap: 15px; margin-bottom: 20px; }
+    .kpi { flex: 1; background: #fff; padding: 15px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); text-align: center; }
+    .kpi .num { font-size: 24px; font-weight: bold; margin-bottom: 5px; }
+    .kpi .lbl { color: #666; font-size: 12px; }
+    .kpi.total { border-top: 4px solid #003366; }
+    .kpi.overdue { border-top: 4px solid #d9534f; color: #d9534f; }
+    .kpi.soon { border-top: 4px solid #f0ad4e; }
+    .kpi.ok { border-top: 4px solid #5cb85c; color: #5cb85c; }
+    .alert-banner { background: #f8d7da; color: #721c24; padding: 12px; border-radius: 6px; margin-bottom: 20px; border: 1px solid #f5c6cb; font-size: 13px; }
+    .alert-banner.danger { background: #f5c6cb; }
+    .filter-bar { background: #fff; padding: 15px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 20px; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+    .filter-bar select, .filter-bar input { padding: 8px 12px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; }
+    .filter-bar input { flex: 1; min-width: 200px; }
+    .btn { padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 13px; }
+    .btn-primary { background: #003366; color: #fff; }
+    .btn-secondary { background: #e0e0e0; color: #333; }
+    .tabs { display: flex; gap: 5px; margin-bottom: 10px; border-bottom: 1px solid #ccc; }
+    .tab { padding: 10px 20px; background: #e0e0e0; border: 1px solid #ccc; border-bottom: none; border-radius: 6px 6px 0 0; cursor: pointer; font-weight: bold; color: #555; }
+    .tab.active { background: #fff; color: #003366; border-bottom: 1px solid #fff; margin-bottom: -1px; }
+    .table-wrapper { background: #fff; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; text-align: left; }
+    th, td { padding: 12px 15px; border-bottom: 1px solid #eee; vertical-align: middle; }
+    th { background: #f8f9fa; cursor: pointer; user-select: none; color: #555; }
+    th:hover { background: #e9ecef; }
+    tr:hover { background: #fdfdfd; }
+    .badge { padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; display: inline-block; }
+    .badge.vencido { background: #f8d7da; color: #721c24; }
+    .badge.critico { background: #fff3cd; color: #856404; }
+    .badge.proximo { background: #e2e3e5; color: #383d41; }
+    .badge.ok { background: #d4edda; color: #155724; }
+    .hospital-tag { font-weight: bold; color: #003366; }
+    .days-cell.neg { color: #d9534f; font-weight: bold; }
+    .days-cell.warn { color: #f0ad4e; font-weight: bold; }
+    .days-cell.ok { color: #5cb85c; }
+    .editable { cursor: pointer; border-bottom: 1px dashed #999; }
+    .inline-date { padding: 4px; border: 1px solid #003366; border-radius: 4px; font-size: 13px; }
+    .action-row { display: flex; gap: 5px; }
+    .icon-btn { background: none; border: none; cursor: pointer; font-size: 16px; padding: 2px; }
+    .icon-btn.del { color: #d9534f; }
+    .export-row { margin-top: 15px; display: flex; justify-content: space-between; align-items: center; }
+    .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); display:none; justify-content:center; align-items:center; z-index:1000; }
+    .modal-overlay.open { display: flex; }
+    .modal { background:#fff; padding:20px; border-radius:6px; width:100%; max-width:450px; box-shadow:0 4px 12px rgba(0,0,0,0.2); }
+    .modal h3 { margin-bottom: 15px; color: #003366; }
+    .form-group { margin-bottom: 12px; display: flex; flex-direction: column; gap: 5px; }
+    .form-group label { font-weight: bold; font-size: 12px; color: #555; }
+    .form-group input, .form-group textarea { padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; }
+    .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 18px; }
+    .notes-cell { display: block; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>Dashboard Mantenimiento – Control de Vencimientos</h1>
+    <div style="font-size:12px; color:#cce6ff; margin-top:4px;" id="today-display"></div>
+  </div>
+  <div>
+    <button class="btn btn-secondary" onclick="openTokenModal()">⚙️ Sync GitHub</button>
+    <button class="btn btn-primary" onclick="openAddModal()">+ Añadir Registro</button>
+  </div>
+</header>
+
+<div class="container">
+  <div id="kpi-row" class="kpi-container"></div>
+  <div id="alert-area"></div>
+
+  <div class="filter-bar">
+    <input type="text" id="filter-search" placeholder="Buscar por hospital, tipo o notas..." oninput="applyFilters()">
+    <select id="filter-hospital" onchange="applyFilters()"></select>
+    <select id="filter-tipo" onchange="applyFilters()"></select>
+    <select id="filter-estado" onchange="applyFilters()"></select>
+    <button class="btn btn-secondary" onclick="clearFilters()">Limpiar</button>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" onclick="setTab('all', this)">Todos</div>
+    <div class="tab" onclick="setTab('vencido', this)">⛔ Vencidos</div>
+    <div class="tab" onclick="setTab('critico', this)">🔴 Críticos</div>
+    <div class="tab" onclick="setTab('proximo', this)">🟡 Próximos</div>
+    <div class="tab" onclick="setTab('ok', this)">🟢 Al día</div>
+  </div>
+
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th onclick="sortTable('hospital')">Hospital ◆</th>
+          <th onclick="sortTable('tipo')">Tipo de Mantenimiento ◆</th>
+          <th onclick="sortTable('fecha')">Fecha Vencimiento ◆</th>
+          <th onclick="sortTable('dias')">Días Restantes ◆</th>
+          <th>Estado</th>
+          <th>Notas</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="table-body"></tbody>
+    </table>
+  </div>
+
+  <div class="export-row">
+    <button class="btn btn-secondary" onclick="exportCSV()">📥 Exportar a CSV</button>
+  </div>
+</div>
+
+<!-- MODAL FORMULARIO -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal">
+    <h3 id="modal-title">Nuevo evento</h3>
+    <div class="form-group">
+      <label>Hospital / Unidad</label>
+      <input type="text" id="m-hospital" placeholder="Ej: MIGUEL SERVET 1ª">
+    </div>
+    <div class="form-group">
+      <label>Tipo de Mantenimiento</label>
+      <input type="text" id="m-tipo" placeholder="Ej: Desinfección RO1, Cambio Carbón">
+    </div>
+    <div class="form-group">
+      <label>Fecha de Vencimiento</label>
+      <input type="date" id="m-fecha">
+    </div>
+    <div class="form-group">
+      <label>Notas / Observaciones</label>
+      <textarea id="m-notes" rows="3" placeholder="Detalles adicionales..."></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveEvent()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL GESTIÓN TOKEN -->
+<div class="modal-overlay" id="token-modal">
+  <div class="modal">
+    <h3>Configuración de GitHub Sync</h3>
+    <p style="font-size:12px; color:#666; margin-bottom:12px;">Introduce tu Personal Access Token (classic) con permisos de 'repo' para guardar cambios en la nube.</p>
+    <div class="form-group">
+      <label>GitHub Personal Access Token</label>
+      <input type="password" id="token-input" placeholder="ghp_xxxxxxxxxxxx">
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="clearToken()" style="background:#f8d7da; color:#721c24;">Eliminar Token</button>
+      <button class="btn btn-secondary" onclick="closeTokenModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveToken()">Guardar Token</button>
+    </div>
+  </div>
+</div>
+
 <script>
 const TODAY = new Date();
 TODAY.setHours(0,0,0,0);
@@ -11,7 +173,6 @@ let userSorted = false;
 let nextId = 1;
 let _insertOrder = 0;
 
-// Variables globales de control añadidas
 let _ghSha = null;
 let saveTimer = null;
 
@@ -182,7 +343,6 @@ const RAW = [
   ["Santiago (AquaC 2CHS6121)","Carbón","2023-10-25","Vencida - revisar"]
 ];
 
-// 🟢 SOLUCIÓN AL ERROR: Declaración e implementación de getToken()
 function getToken() {
   return localStorage.getItem('github-token') || '';
 }
@@ -237,7 +397,6 @@ function loadInitialData() {
     tipo: r[1],
     fecha: parseDateStr(r[2]),
     fechaStr: r[2] || '',
-    notes: r[3] || '', // Mapeado a .notas internamente
     notas: r[3] || ''
   }));
 }
@@ -487,7 +646,6 @@ function renderTable() {
   }).join('');
 }
 
-// 🟢 EDICIÓN EN LÍNEA DE FECHAS
 function editDate(id) {
   document.getElementById(`date-disp-${id}`).style.display = 'none';
   const inp = document.getElementById(`date-inp-${id}`);
@@ -515,14 +673,13 @@ function commitDate(id) {
   }
 }
 
-// 🟢 MANEJO DE MODAL CRUD
 function openAddModal() {
   editingId = null;
   document.getElementById('modal-title').textContent = "Nuevo evento de mantenimiento";
   document.getElementById('m-hospital').value = "";
   document.getElementById('m-tipo').value = "";
   document.getElementById('m-fecha').value = "";
-  document.getElementById('m-notas').value = "";
+  document.getElementById('m-notes').value = "";
   document.getElementById('modal-overlay').classList.add('open');
 }
 
@@ -534,7 +691,7 @@ function openEditModal(id) {
   document.getElementById('m-hospital').value = ev.hospital;
   document.getElementById('m-tipo').value = ev.tipo;
   document.getElementById('m-fecha').value = ev.fecha ? toInputDate(ev.fecha) : '';
-  document.getElementById('m-notas').value = ev.notas || '';
+  document.getElementById('m-notes').value = ev.notas || '';
   document.getElementById('modal-overlay').classList.add('open');
 }
 
@@ -546,7 +703,7 @@ function saveEvent() {
   const hosp = document.getElementById('m-hospital').value.trim();
   const tipo = document.getElementById('m-tipo').value.trim();
   const fech = document.getElementById('m-fecha').value;
-  const nots = document.getElementById('m-notas').value.trim();
+  const nots = document.getElementById('m-notes').value.trim();
 
   if (!hosp || !tipo) { alert('Hospital y Tipo de mantenimiento son obligatorios'); return; }
 
@@ -584,7 +741,6 @@ function deleteEvent(id) {
   saveToStorage();
 }
 
-// 🟢 MANEJO DEL TOKEN MODAL (SYNC)
 function openTokenModal() {
   document.getElementById('token-input').value = getToken();
   document.getElementById('token-modal').classList.add('open');
@@ -618,7 +774,6 @@ function clearToken() {
   }
 }
 
-// 🟢 EXPORTACIÓN A CSV
 function exportCSV() {
   const activeEvents = filteredEvents();
   let csv = '\uFEFFHospital;Tipo de Mantenimiento;Fecha de Vencimiento;Dias Restantes;Estado;Notas\n';
@@ -637,7 +792,6 @@ function exportCSV() {
   document.body.removeChild(link);
 }
 
-// 🟢 ARRANQUE INICIAL AL CARGAR EL DOM
 window.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('today-display').textContent = TODAY.toLocaleDateString('es-ES', { 
     weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
