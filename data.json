@@ -84,15 +84,6 @@
       "notas": ""
     },
     {
-      "id": 11,
-      "_order": 10,
-      "hospital": "Soria",
-      "tipo": "Desinfección RO1",
-      "fecha": "2026-05-05",
-      "fechaStr": "2026-05-05",
-      "notas": ""
-    },
-    {
       "id": 12,
       "_order": 11,
       "hospital": "ALCAÑIZ",
