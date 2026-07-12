@@ -597,15 +597,6 @@
       "notas": ""
     },
     {
-      "id": 73,
-      "_order": 72,
-      "hospital": "DIALBILBO",
-      "tipo": "CTS CDS08 2",
-      "fecha": "2027-05-18",
-      "fechaStr": "2027-05-18",
-      "notas": ""
-    },
-    {
       "id": 74,
       "_order": 73,
       "hospital": "Logroño",
