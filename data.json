@@ -1101,15 +1101,6 @@
       "notas": "Vencida - revisar"
     },
     {
-      "id": 155,
-      "_order": 154,
-      "hospital": "Santiago (AquaC)",
-      "tipo": "CTS",
-      "fecha": "2025-03-01",
-      "fechaStr": "2025-03-01",
-      "notas": "Fecha pasada - revisar"
-    },
-    {
       "id": 156,
       "_order": 155,
       "hospital": "Santiago (AquaC)",
