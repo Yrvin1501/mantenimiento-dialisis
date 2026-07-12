@@ -795,15 +795,6 @@
       "notas": "Fecha pasada - revisar"
     },
     {
-      "id": 99,
-      "_order": 98,
-      "hospital": "Txagorritxu",
-      "tipo": "Cambio filtros Pretratamiento",
-      "fecha": "2026-02-14",
-      "fechaStr": "2026-02-14",
-      "notas": "Fecha pasada - revisar"
-    },
-    {
       "id": 100,
       "_order": 99,
       "hospital": "Logroño",
