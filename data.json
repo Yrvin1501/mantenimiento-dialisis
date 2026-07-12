@@ -588,15 +588,6 @@
       "notas": ""
     },
     {
-      "id": 85,
-      "_order": 84,
-      "hospital": "Santiago A",
-      "tipo": "CTS CDS 03",
-      "fecha": "2027-02-10",
-      "fechaStr": "2027-02-10",
-      "notas": ""
-    },
-    {
       "id": 86,
       "_order": 85,
       "hospital": "Txagorritxu",
