@@ -291,15 +291,6 @@
       "notas": ""
     },
     {
-      "id": 49,
-      "_order": 48,
-      "hospital": "Txagorritxu",
-      "tipo": "CTS Pretratamiento",
-      "fecha": "2027-01-01",
-      "fechaStr": "2027-01-01",
-      "notas": ""
-    },
-    {
       "id": 50,
       "_order": 49,
       "hospital": "Soria",
