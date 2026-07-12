@@ -583,8 +583,8 @@
       "_order": 105,
       "hospital": "Barbastro",
       "tipo": "Membranas",
-      "fecha": "2025-12-12",
-      "fechaStr": "2025-12-12",
+      "fecha": null,
+      "fechaStr": "",
       "notas": "Vencida - revisar"
     },
     {
