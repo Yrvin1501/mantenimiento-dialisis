@@ -156,15 +156,6 @@
       "notas": ""
     },
     {
-      "id": 24,
-      "_order": 23,
-      "hospital": "Logroño",
-      "tipo": "Cambio carbón 1",
-      "fecha": "2028-04-29",
-      "fechaStr": "2028-04-29",
-      "notas": ""
-    },
-    {
       "id": 25,
       "_order": 24,
       "hospital": "ALCAÑIZ",
