@@ -336,15 +336,6 @@
       "notas": ""
     },
     {
-      "id": 48,
-      "_order": 47,
-      "hospital": "Santiago A",
-      "tipo": "CTS Pretratamiento",
-      "fecha": "2027-02-10",
-      "fechaStr": "2027-02-10",
-      "notas": ""
-    },
-    {
       "id": 49,
       "_order": 48,
       "hospital": "Txagorritxu",
