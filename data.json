@@ -147,15 +147,6 @@
       "notas": ""
     },
     {
-      "id": 23,
-      "_order": 22,
-      "hospital": "Txagorritxu",
-      "tipo": "Cambio carbón 1",
-      "fecha": "2027-01-01",
-      "fechaStr": "2027-01-01",
-      "notas": ""
-    },
-    {
       "id": 25,
       "_order": 24,
       "hospital": "ALCAÑIZ",
