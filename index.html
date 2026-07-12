@@ -646,24 +646,33 @@ async function saveToStorage() {
 }
 
 async function loadFromStorage() {
-  const token = getToken();
-  if (token) {
-    showSaveIndicator('⏳ Cargando desde GitHub…');
-    const remote = await ghGet();
-    if (remote) {
-      try {
-        deserializeEvents(remote);
-        localStorage.setItem('dialisis-events', remote);
-        showSaveIndicator('✓ Datos sincronizados');
-        return true;
-      } catch(e) {}
+  // 1. Try public data.json (no token needed — works on all devices)
+  try {
+    showSaveIndicator('⏳ Cargando datos…');
+    const r = await fetch(
+      `https://raw.githubusercontent.com/${GH_REPO}/${GH_BRANCH}/${GH_FILE}?t=${Date.now()}`,
+      { cache: 'no-store' }
+    );
+    if (r.ok) {
+      const text = await r.text();
+      deserializeEvents(text);
+      localStorage.setItem('dialisis-events', text);
+      // Get SHA for future writes (needs token)
+      const token = getToken();
+      if (token) ghGet().then(() => {}); // warm up SHA
+      showSaveIndicator('✓ Datos actualizados');
+      return true;
     }
-  }
-  // Fallback to localStorage
+  } catch(e) {}
+
+  // 2. Fallback: localStorage
   const raw = localStorage.getItem('dialisis-events');
   if (raw) {
-    try { deserializeEvents(raw); showSaveIndicator('✓ Datos locales cargados'); return true; }
-    catch(e) {}
+    try {
+      deserializeEvents(raw);
+      showSaveIndicator('✓ Datos locales');
+      return true;
+    } catch(e) {}
   }
   return false;
 }
