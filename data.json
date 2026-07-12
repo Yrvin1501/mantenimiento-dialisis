@@ -165,15 +165,6 @@
       "notas": ""
     },
     {
-      "id": 20,
-      "_order": 19,
-      "hospital": "DIALBILBO",
-      "tipo": "Cambio carbón 1",
-      "fecha": "2027-05-18",
-      "fechaStr": "2027-05-18",
-      "notas": "okok"
-    },
-    {
       "id": 21,
       "_order": 20,
       "hospital": "Policlinica",
