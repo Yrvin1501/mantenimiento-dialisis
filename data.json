@@ -1254,15 +1254,6 @@
       "notas": "Vencida - revisar"
     },
     {
-      "id": 159,
-      "_order": 158,
-      "hospital": "Santiago (AquaC 2CHS6121)",
-      "tipo": "Filtros",
-      "fecha": "2023-10-25",
-      "fechaStr": "2023-10-25",
-      "notas": "Vencida - revisar"
-    },
-    {
       "id": 160,
       "_order": 159,
       "hospital": "Santiago (AquaC 2CHS6121)",
