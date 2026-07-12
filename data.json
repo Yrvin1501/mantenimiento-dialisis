@@ -723,15 +723,6 @@
       "notas": ""
     },
     {
-      "id": 88,
-      "_order": 87,
-      "hospital": "DIALBILBO",
-      "tipo": "Cambio filtros Diasafe",
-      "fecha": "2026-11-13",
-      "fechaStr": "2026-11-13",
-      "notas": ""
-    },
-    {
       "id": 89,
       "_order": 88,
       "hospital": "Logroño",
