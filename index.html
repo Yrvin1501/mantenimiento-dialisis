@@ -725,19 +725,25 @@ function clearToken() {
 }
 
 function showSyncBanner() {
-  let b = document.getElementById('sync-banner');
-  if (!b) {
-    b = document.createElement('div');
-    b.id = 'sync-banner';
-    b.style.cssText = 'background:#1a3a5c;color:#fff;padding:10px 20px;font-size:13px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;';
-    b.innerHTML = '<span>🔗 <strong>Sin sincronización activa.</strong> Configura tu token de GitHub para sincronizar entre dispositivos.</span>'
-      + '<button onclick="openTokenModal();document.getElementById('sync-banner').remove()" style="background:#fff;color:#1a3a5c;border:none;border-radius:5px;padding:5px 12px;font-size:12px;font-weight:600;cursor:pointer">⚙️ Configurar ahora</button>'
-      + '<button onclick="this.parentElement.remove()" style="background:transparent;color:rgba(255,255,255,0.6);border:none;font-size:18px;cursor:pointer;margin-left:auto">✕</button>';
-    document.querySelector('header').insertAdjacentElement('afterend', b);
-  }
+  if (document.getElementById('sync-banner')) return;
+  const b = document.createElement('div');
+  b.id = 'sync-banner';
+  b.style.cssText = 'background:#1a3a5c;color:#fff;padding:10px 20px;font-size:13px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;';
+  const span = document.createElement('span');
+  span.innerHTML = '🔗 <strong>Sin sincronización activa.</strong> Configura tu token de GitHub para sincronizar entre dispositivos.';
+  const btnConfig = document.createElement('button');
+  btnConfig.textContent = '⚙️ Configurar ahora';
+  btnConfig.style.cssText = 'background:#fff;color:#1a3a5c;border:none;border-radius:5px;padding:5px 12px;font-size:12px;font-weight:600;cursor:pointer';
+  btnConfig.onclick = function() { b.remove(); openTokenModal(); };
+  const btnClose = document.createElement('button');
+  btnClose.textContent = '✕';
+  btnClose.style.cssText = 'background:transparent;color:rgba(255,255,255,0.6);border:none;font-size:18px;cursor:pointer;margin-left:auto';
+  btnClose.onclick = function() { b.remove(); };
+  b.appendChild(span);
+  b.appendChild(btnConfig);
+  b.appendChild(btnClose);
+  document.querySelector('header').insertAdjacentElement('afterend', b);
 }
-
-let saveTimer;
 function showSaveIndicator(msg, warn) {
   let ind = document.getElementById('save-ind');
   if (!ind) {
