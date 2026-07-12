@@ -444,15 +444,6 @@
       "notas": ""
     },
     {
-      "id": 60,
-      "_order": 59,
-      "hospital": "Policlinica",
-      "tipo": "CTS Osmosis 1",
-      "fecha": "2026-09-04",
-      "fechaStr": "2026-09-04",
-      "notas": ""
-    },
-    {
       "id": 61,
       "_order": 60,
       "hospital": "Santiago A",
