@@ -687,15 +687,6 @@
       "notas": ""
     },
     {
-      "id": 84,
-      "_order": 83,
-      "hospital": "Donosti",
-      "tipo": "CTS CDS 03",
-      "fecha": "2026-02-28",
-      "fechaStr": "2026-02-28",
-      "notas": "Fecha pasada - revisar"
-    },
-    {
       "id": 85,
       "_order": 84,
       "hospital": "Santiago A",
