@@ -516,15 +516,6 @@
       "notas": ""
     },
     {
-      "id": 70,
-      "_order": 69,
-      "hospital": "Policlinica",
-      "tipo": "CTS CDS08 1",
-      "fecha": "2027-11-23",
-      "fechaStr": "2027-11-23",
-      "notas": ""
-    },
-    {
       "id": 71,
       "_order": 70,
       "hospital": "Logroño",
