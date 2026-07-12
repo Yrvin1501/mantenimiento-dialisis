@@ -1,6 +1,6 @@
 {
-  "nextId": 51,
-  "_insertOrder": 50,
+  "nextId": 161,
+  "_insertOrder": 160,
   "events": [
     {
       "id": 1,
@@ -451,6 +451,996 @@
       "fecha": "2026-10-29",
       "fechaStr": "2026-10-29",
       "notas": ""
+    },
+    {
+      "id": 51,
+      "_order": 50,
+      "hospital": "ALCAÑIZ",
+      "tipo": "CTS Osmosis 1",
+      "fecha": "2028-01-01",
+      "fechaStr": "2028-01-01",
+      "notas": ""
+    },
+    {
+      "id": 52,
+      "_order": 51,
+      "hospital": "MIGUEL SERVET 1ª",
+      "tipo": "CTS Osmosis 1",
+      "fecha": "2026-05-15",
+      "fechaStr": "2026-05-15",
+      "notas": ""
+    },
+    {
+      "id": 53,
+      "_order": 52,
+      "hospital": "MIGUEL SERVET 6ª",
+      "tipo": "CTS Osmosis 1",
+      "fecha": "2026-05-15",
+      "fechaStr": "2026-05-15",
+      "notas": ""
+    },
+    {
+      "id": 54,
+      "_order": 53,
+      "hospital": "CLINICO",
+      "tipo": "CTS Osmosis 1",
+      "fecha": "2027-11-06",
+      "fechaStr": "2027-11-06",
+      "notas": ""
+    },
+    {
+      "id": 55,
+      "_order": 54,
+      "hospital": "INOCENCIO",
+      "tipo": "CTS Osmosis 1",
+      "fecha": "2026-07-23",
+      "fechaStr": "2026-07-23",
+      "notas": ""
+    },
+    {
+      "id": 56,
+      "_order": 55,
+      "hospital": "H. HUESCA",
+      "tipo": "CTS Osmosis 1",
+      "fecha": "2026-09-18",
+      "fechaStr": "2026-09-18",
+      "notas": ""
+    },
+    {
+      "id": 57,
+      "_order": 56,
+      "hospital": "Barbastro",
+      "tipo": "CTS Osmosis 1",
+      "fecha": "2026-07-10",
+      "fechaStr": "2026-07-10",
+      "notas": ""
+    },
+    {
+      "id": 58,
+      "_order": 57,
+      "hospital": "H. JACA",
+      "tipo": "CTS Osmosis 1",
+      "fecha": "2026-08-13",
+      "fechaStr": "2026-08-13",
+      "notas": ""
+    },
+    {
+      "id": 59,
+      "_order": 58,
+      "hospital": "DIALBILBO",
+      "tipo": "CTS Osmosis 1",
+      "fecha": "2027-03-26",
+      "fechaStr": "2027-03-26",
+      "notas": ""
+    },
+    {
+      "id": 60,
+      "_order": 59,
+      "hospital": "Policlinica",
+      "tipo": "CTS Osmosis 1",
+      "fecha": "2026-09-04",
+      "fechaStr": "2026-09-04",
+      "notas": ""
+    },
+    {
+      "id": 61,
+      "_order": 60,
+      "hospital": "Santiago A",
+      "tipo": "CTS Osmosis 1",
+      "fecha": "2027-02-10",
+      "fechaStr": "2027-02-10",
+      "notas": ""
+    },
+    {
+      "id": 62,
+      "_order": 61,
+      "hospital": "Txagorritxu",
+      "tipo": "CTS Osmosis 1",
+      "fecha": "2027-01-01",
+      "fechaStr": "2027-01-01",
+      "notas": ""
+    },
+    {
+      "id": 63,
+      "_order": 62,
+      "hospital": "Logroño",
+      "tipo": "CTS Osmosis 1",
+      "fecha": "2026-12-26",
+      "fechaStr": "2026-12-26",
+      "notas": ""
+    },
+    {
+      "id": 64,
+      "_order": 63,
+      "hospital": "Soria",
+      "tipo": "CTS Osmosis 1",
+      "fecha": "2026-10-29",
+      "fechaStr": "2026-10-29",
+      "notas": ""
+    },
+    {
+      "id": 65,
+      "_order": 64,
+      "hospital": "Barbastro",
+      "tipo": "CTS Osmosis 2",
+      "fecha": "2026-07-10",
+      "fechaStr": "2026-07-10",
+      "notas": ""
+    },
+    {
+      "id": 66,
+      "_order": 65,
+      "hospital": "Santiago A",
+      "tipo": "CTS Osmosis 2",
+      "fecha": "2027-02-10",
+      "fechaStr": "2027-02-10",
+      "notas": ""
+    },
+    {
+      "id": 67,
+      "_order": 66,
+      "hospital": "Txagorritxu",
+      "tipo": "CTS Osmosis 2",
+      "fecha": "2027-01-01",
+      "fechaStr": "2027-01-01",
+      "notas": ""
+    },
+    {
+      "id": 68,
+      "_order": 67,
+      "hospital": "H. HUESCA",
+      "tipo": "CTS CDS08 1",
+      "fecha": "2026-11-15",
+      "fechaStr": "2026-11-15",
+      "notas": ""
+    },
+    {
+      "id": 69,
+      "_order": 68,
+      "hospital": "DIALBILBO",
+      "tipo": "CTS CDS08 1",
+      "fecha": "2027-05-18",
+      "fechaStr": "2027-05-18",
+      "notas": ""
+    },
+    {
+      "id": 70,
+      "_order": 69,
+      "hospital": "Policlinica",
+      "tipo": "CTS CDS08 1",
+      "fecha": "2027-11-23",
+      "fechaStr": "2027-11-23",
+      "notas": ""
+    },
+    {
+      "id": 71,
+      "_order": 70,
+      "hospital": "Logroño",
+      "tipo": "CTS CDS08 1",
+      "fecha": "2026-09-24",
+      "fechaStr": "2026-09-24",
+      "notas": ""
+    },
+    {
+      "id": 72,
+      "_order": 71,
+      "hospital": "H. HUESCA",
+      "tipo": "CTS CDS08 2",
+      "fecha": "2026-11-15",
+      "fechaStr": "2026-11-15",
+      "notas": ""
+    },
+    {
+      "id": 73,
+      "_order": 72,
+      "hospital": "DIALBILBO",
+      "tipo": "CTS CDS08 2",
+      "fecha": "2027-05-18",
+      "fechaStr": "2027-05-18",
+      "notas": ""
+    },
+    {
+      "id": 74,
+      "_order": 73,
+      "hospital": "Logroño",
+      "tipo": "CTS CDS08 2",
+      "fecha": "2026-09-24",
+      "fechaStr": "2026-09-24",
+      "notas": ""
+    },
+    {
+      "id": 75,
+      "_order": 74,
+      "hospital": "ALCAÑIZ",
+      "tipo": "CTS CDS 03",
+      "fecha": "2028-01-01",
+      "fechaStr": "2028-01-01",
+      "notas": ""
+    },
+    {
+      "id": 76,
+      "_order": 75,
+      "hospital": "MIGUEL SERVET 1ª",
+      "tipo": "CTS CDS 03",
+      "fecha": "2026-05-15",
+      "fechaStr": "2026-05-15",
+      "notas": ""
+    },
+    {
+      "id": 77,
+      "_order": 76,
+      "hospital": "MIGUEL SERVET 6ª",
+      "tipo": "CTS CDS 03",
+      "fecha": "2026-05-15",
+      "fechaStr": "2026-05-15",
+      "notas": ""
+    },
+    {
+      "id": 78,
+      "_order": 77,
+      "hospital": "CLINICO",
+      "tipo": "CTS CDS 03",
+      "fecha": "2027-11-06",
+      "fechaStr": "2027-11-06",
+      "notas": ""
+    },
+    {
+      "id": 79,
+      "_order": 78,
+      "hospital": "INOCENCIO",
+      "tipo": "CTS CDS 03",
+      "fecha": "2026-07-23",
+      "fechaStr": "2026-07-23",
+      "notas": ""
+    },
+    {
+      "id": 80,
+      "_order": 79,
+      "hospital": "Barbastro",
+      "tipo": "CTS CDS 03",
+      "fecha": "2026-03-12",
+      "fechaStr": "2026-03-12",
+      "notas": "Fecha pasada - revisar"
+    },
+    {
+      "id": 81,
+      "_order": 80,
+      "hospital": "H. JACA",
+      "tipo": "CTS CDS 03",
+      "fecha": "2026-08-13",
+      "fechaStr": "2026-08-13",
+      "notas": ""
+    },
+    {
+      "id": 82,
+      "_order": 81,
+      "hospital": "Militar",
+      "tipo": "CTS CDS 03",
+      "fecha": "2028-03-01",
+      "fechaStr": "2028-03-01",
+      "notas": ""
+    },
+    {
+      "id": 83,
+      "_order": 82,
+      "hospital": "Teruel",
+      "tipo": "CTS CDS 03",
+      "fecha": "2026-08-23",
+      "fechaStr": "2026-08-23",
+      "notas": ""
+    },
+    {
+      "id": 84,
+      "_order": 83,
+      "hospital": "Donosti",
+      "tipo": "CTS CDS 03",
+      "fecha": "2026-02-28",
+      "fechaStr": "2026-02-28",
+      "notas": "Fecha pasada - revisar"
+    },
+    {
+      "id": 85,
+      "_order": 84,
+      "hospital": "Santiago A",
+      "tipo": "CTS CDS 03",
+      "fecha": "2027-02-10",
+      "fechaStr": "2027-02-10",
+      "notas": ""
+    },
+    {
+      "id": 86,
+      "_order": 85,
+      "hospital": "Txagorritxu",
+      "tipo": "CTS CDS 03",
+      "fecha": "2027-01-01",
+      "fechaStr": "2027-01-01",
+      "notas": ""
+    },
+    {
+      "id": 87,
+      "_order": 86,
+      "hospital": "Soria",
+      "tipo": "CTS CDS 03",
+      "fecha": "2026-11-04",
+      "fechaStr": "2026-11-04",
+      "notas": ""
+    },
+    {
+      "id": 88,
+      "_order": 87,
+      "hospital": "DIALBILBO",
+      "tipo": "Cambio filtros Diasafe",
+      "fecha": "2026-11-13",
+      "fechaStr": "2026-11-13",
+      "notas": ""
+    },
+    {
+      "id": 89,
+      "_order": 88,
+      "hospital": "Logroño",
+      "tipo": "Cambio filtros Diasafe",
+      "fecha": "2026-09-29",
+      "fechaStr": "2026-09-29",
+      "notas": ""
+    },
+    {
+      "id": 90,
+      "_order": 89,
+      "hospital": "ALCAÑIZ",
+      "tipo": "Cambio filtros Pretratamiento",
+      "fecha": "2026-06-17",
+      "fechaStr": "2026-06-17",
+      "notas": ""
+    },
+    {
+      "id": 91,
+      "_order": 90,
+      "hospital": "MIGUEL SERVET 1ª",
+      "tipo": "Cambio filtros Pretratamiento",
+      "fecha": "2026-11-17",
+      "fechaStr": "2026-11-17",
+      "notas": ""
+    },
+    {
+      "id": 92,
+      "_order": 91,
+      "hospital": "MIGUEL SERVET 6ª",
+      "tipo": "Cambio filtros Pretratamiento",
+      "fecha": "2026-11-17",
+      "fechaStr": "2026-11-17",
+      "notas": ""
+    },
+    {
+      "id": 93,
+      "_order": 92,
+      "hospital": "CLINICO",
+      "tipo": "Cambio filtros Pretratamiento",
+      "fecha": "2026-04-05",
+      "fechaStr": "2026-04-05",
+      "notas": ""
+    },
+    {
+      "id": 94,
+      "_order": 93,
+      "hospital": "INOCENCIO",
+      "tipo": "Cambio filtros Pretratamiento",
+      "fecha": "2026-09-24",
+      "fechaStr": "2026-09-24",
+      "notas": ""
+    },
+    {
+      "id": 95,
+      "_order": 94,
+      "hospital": "H. HUESCA",
+      "tipo": "Cambio filtros Pretratamiento",
+      "fecha": "2026-03-02",
+      "fechaStr": "2026-03-02",
+      "notas": "Fecha pasada - revisar"
+    },
+    {
+      "id": 96,
+      "_order": 95,
+      "hospital": "Barbastro",
+      "tipo": "Cambio filtros Pretratamiento",
+      "fecha": "2026-04-12",
+      "fechaStr": "2026-04-12",
+      "notas": ""
+    },
+    {
+      "id": 97,
+      "_order": 96,
+      "hospital": "H. JACA",
+      "tipo": "Cambio filtros Pretratamiento",
+      "fecha": "2026-06-27",
+      "fechaStr": "2026-06-27",
+      "notas": ""
+    },
+    {
+      "id": 98,
+      "_order": 97,
+      "hospital": "Santiago A",
+      "tipo": "Cambio filtros Pretratamiento",
+      "fecha": "2025-06-16",
+      "fechaStr": "2025-06-16",
+      "notas": "Fecha pasada - revisar"
+    },
+    {
+      "id": 99,
+      "_order": 98,
+      "hospital": "Txagorritxu",
+      "tipo": "Cambio filtros Pretratamiento",
+      "fecha": "2026-02-14",
+      "fechaStr": "2026-02-14",
+      "notas": "Fecha pasada - revisar"
+    },
+    {
+      "id": 100,
+      "_order": 99,
+      "hospital": "Logroño",
+      "tipo": "Cambio filtros Pretratamiento",
+      "fecha": "2027-01-10",
+      "fechaStr": "2027-01-10",
+      "notas": ""
+    },
+    {
+      "id": 101,
+      "_order": 100,
+      "hospital": "Soria",
+      "tipo": "Cambio filtros Pretratamiento",
+      "fecha": "2026-11-05",
+      "fechaStr": "2026-11-05",
+      "notas": ""
+    },
+    {
+      "id": 102,
+      "_order": 101,
+      "hospital": "MIGUEL SERVET 6ª",
+      "tipo": "Membranas",
+      "fecha": "2025-12-03",
+      "fechaStr": "2025-12-03",
+      "notas": "Vencida - revisar"
+    },
+    {
+      "id": 103,
+      "_order": 102,
+      "hospital": "CLINICO",
+      "tipo": "Membranas",
+      "fecha": "2025-12-15",
+      "fechaStr": "2025-12-15",
+      "notas": "Vencida - revisar"
+    },
+    {
+      "id": 104,
+      "_order": 103,
+      "hospital": "INOCENCIO",
+      "tipo": "Membranas",
+      "fecha": "2025-12-12",
+      "fechaStr": "2025-12-12",
+      "notas": "Vencida - revisar"
+    },
+    {
+      "id": 105,
+      "_order": 104,
+      "hospital": "H. HUESCA",
+      "tipo": "Membranas",
+      "fecha": "2025-04-01",
+      "fechaStr": "2025-04-01",
+      "notas": "Vencida - revisar"
+    },
+    {
+      "id": 106,
+      "_order": 105,
+      "hospital": "Barbastro",
+      "tipo": "Membranas",
+      "fecha": "2025-12-12",
+      "fechaStr": "2025-12-12",
+      "notas": "Vencida - revisar"
+    },
+    {
+      "id": 107,
+      "_order": 106,
+      "hospital": "Donosti",
+      "tipo": "Membranas",
+      "fecha": "2026-03-13",
+      "fechaStr": "2026-03-13",
+      "notas": "Fecha pasada - revisar"
+    },
+    {
+      "id": 108,
+      "_order": 107,
+      "hospital": "Servet (Aqua Uno 1)",
+      "tipo": "CTS",
+      "fecha": "2026-09-03",
+      "fechaStr": "2026-09-03",
+      "notas": ""
+    },
+    {
+      "id": 109,
+      "_order": 108,
+      "hospital": "Servet (Aqua Uno 1)",
+      "tipo": "Filtros",
+      "fecha": "2026-01-01",
+      "fechaStr": "2026-01-01",
+      "notas": "Verificar"
+    },
+    {
+      "id": 110,
+      "_order": 109,
+      "hospital": "Servet (Aqua Uno 1)",
+      "tipo": "Carbón",
+      "fecha": "2026-01-01",
+      "fechaStr": "2026-01-01",
+      "notas": "Verificar"
+    },
+    {
+      "id": 111,
+      "_order": 110,
+      "hospital": "Servet (Aqua Uno 1)",
+      "tipo": "Desinfección química",
+      "fecha": "2025-12-01",
+      "fechaStr": "2025-12-01",
+      "notas": "Verificar"
+    },
+    {
+      "id": 112,
+      "_order": 111,
+      "hospital": "Servet (Aqua Uno 2)",
+      "tipo": "CTS",
+      "fecha": "2026-08-27",
+      "fechaStr": "2026-08-27",
+      "notas": ""
+    },
+    {
+      "id": 113,
+      "_order": 112,
+      "hospital": "Servet (Aqua Uno 2)",
+      "tipo": "Filtros",
+      "fecha": "2026-01-01",
+      "fechaStr": "2026-01-01",
+      "notas": ""
+    },
+    {
+      "id": 114,
+      "_order": 113,
+      "hospital": "Servet (Aqua Uno 2)",
+      "tipo": "Carbón",
+      "fecha": "2026-01-01",
+      "fechaStr": "2026-01-01",
+      "notas": ""
+    },
+    {
+      "id": 115,
+      "_order": 114,
+      "hospital": "Servet (Aqua Uno 2)",
+      "tipo": "Desinfección química",
+      "fecha": "2025-06-01",
+      "fechaStr": "2025-06-01",
+      "notas": "Verificar"
+    },
+    {
+      "id": 116,
+      "_order": 115,
+      "hospital": "Servet (Aqua Uno 3)",
+      "tipo": "CTS",
+      "fecha": "2026-09-11",
+      "fechaStr": "2026-09-11",
+      "notas": ""
+    },
+    {
+      "id": 117,
+      "_order": 116,
+      "hospital": "Servet (Aqua Uno 3)",
+      "tipo": "Filtros",
+      "fecha": "2026-01-01",
+      "fechaStr": "2026-01-01",
+      "notas": ""
+    },
+    {
+      "id": 118,
+      "_order": 117,
+      "hospital": "Servet (Aqua Uno 3)",
+      "tipo": "Carbón",
+      "fecha": "2026-01-01",
+      "fechaStr": "2026-01-01",
+      "notas": ""
+    },
+    {
+      "id": 119,
+      "_order": 118,
+      "hospital": "Servet (Aqua Uno 3)",
+      "tipo": "Desinfección química",
+      "fecha": "2026-02-01",
+      "fechaStr": "2026-02-01",
+      "notas": "Verificar"
+    },
+    {
+      "id": 120,
+      "_order": 119,
+      "hospital": "Servet (Aqua Uno 4)",
+      "tipo": "CTS",
+      "fecha": "2026-09-11",
+      "fechaStr": "2026-09-11",
+      "notas": ""
+    },
+    {
+      "id": 121,
+      "_order": 120,
+      "hospital": "Servet (Aqua Uno 4)",
+      "tipo": "Filtros",
+      "fecha": "2026-01-01",
+      "fechaStr": "2026-01-01",
+      "notas": ""
+    },
+    {
+      "id": 122,
+      "_order": 121,
+      "hospital": "Servet (Aqua Uno 4)",
+      "tipo": "Carbón",
+      "fecha": "2026-01-01",
+      "fechaStr": "2026-01-01",
+      "notas": ""
+    },
+    {
+      "id": 123,
+      "_order": 122,
+      "hospital": "Servet (Aqua Uno 4)",
+      "tipo": "Desinfección química",
+      "fecha": "2025-06-01",
+      "fechaStr": "2025-06-01",
+      "notas": "Verificar"
+    },
+    {
+      "id": 124,
+      "_order": 123,
+      "hospital": "Servet (rAqua C H 5)",
+      "tipo": "CTS",
+      "fecha": "2027-12-15",
+      "fechaStr": "2027-12-15",
+      "notas": ""
+    },
+    {
+      "id": 125,
+      "_order": 124,
+      "hospital": "Servet (rAqua C H 5)",
+      "tipo": "Filtros",
+      "fecha": "2025-12-01",
+      "fechaStr": "2025-12-01",
+      "notas": "Verificar"
+    },
+    {
+      "id": 126,
+      "_order": 125,
+      "hospital": "Servet (rAqua C H 5)",
+      "tipo": "Carbón",
+      "fecha": "2025-12-01",
+      "fechaStr": "2025-12-01",
+      "notas": "Verificar"
+    },
+    {
+      "id": 127,
+      "_order": 126,
+      "hospital": "Servet (rAqua C H 5)",
+      "tipo": "Desinfección química",
+      "fecha": "2025-07-01",
+      "fechaStr": "2025-07-01",
+      "notas": "Verificar"
+    },
+    {
+      "id": 128,
+      "_order": 127,
+      "hospital": "Servet (Aqua C H 6)",
+      "tipo": "CTS",
+      "fecha": "2027-12-15",
+      "fechaStr": "2027-12-15",
+      "notas": ""
+    },
+    {
+      "id": 129,
+      "_order": 128,
+      "hospital": "Servet (Aqua C H 6)",
+      "tipo": "Filtros",
+      "fecha": "2026-01-01",
+      "fechaStr": "2026-01-01",
+      "notas": ""
+    },
+    {
+      "id": 130,
+      "_order": 129,
+      "hospital": "Servet (Aqua C H 6)",
+      "tipo": "Carbón",
+      "fecha": "2026-01-01",
+      "fechaStr": "2026-01-01",
+      "notas": ""
+    },
+    {
+      "id": 131,
+      "_order": 130,
+      "hospital": "Servet (Aqua C H 6)",
+      "tipo": "Desinfección química",
+      "fecha": "2026-01-01",
+      "fechaStr": "2026-01-01",
+      "notas": ""
+    },
+    {
+      "id": 132,
+      "_order": 131,
+      "hospital": "Servet (Infantil 1079)",
+      "tipo": "CTS",
+      "fecha": "2027-06-30",
+      "fechaStr": "2027-06-30",
+      "notas": ""
+    },
+    {
+      "id": 133,
+      "_order": 132,
+      "hospital": "Servet (Infantil 1079)",
+      "tipo": "Filtros",
+      "fecha": "2026-01-01",
+      "fechaStr": "2026-01-01",
+      "notas": ""
+    },
+    {
+      "id": 134,
+      "_order": 133,
+      "hospital": "Servet (Infantil 1079)",
+      "tipo": "Carbón",
+      "fecha": "2025-09-01",
+      "fechaStr": "2025-09-01",
+      "notas": "Verificar"
+    },
+    {
+      "id": 135,
+      "_order": 134,
+      "hospital": "Servet (Infantil 1079)",
+      "tipo": "Desinfección química",
+      "fecha": "2026-01-01",
+      "fechaStr": "2026-01-01",
+      "notas": ""
+    },
+    {
+      "id": 136,
+      "_order": 135,
+      "hospital": "Servet (Aqua Uno 5)",
+      "tipo": "CTS",
+      "fecha": "2026-07-05",
+      "fechaStr": "2026-07-05",
+      "notas": ""
+    },
+    {
+      "id": 137,
+      "_order": 136,
+      "hospital": "Servet (Aqua Uno 5)",
+      "tipo": "Filtros",
+      "fecha": "2026-01-01",
+      "fechaStr": "2026-01-01",
+      "notas": ""
+    },
+    {
+      "id": 138,
+      "_order": 137,
+      "hospital": "Servet (Aqua Uno 5)",
+      "tipo": "Carbón",
+      "fecha": "2025-11-01",
+      "fechaStr": "2025-11-01",
+      "notas": "Verificar"
+    },
+    {
+      "id": 139,
+      "_order": 138,
+      "hospital": "Servet (Aqua Uno 5)",
+      "tipo": "Desinfección química",
+      "fecha": "2025-11-01",
+      "fechaStr": "2025-11-01",
+      "notas": "Verificar"
+    },
+    {
+      "id": 140,
+      "_order": 139,
+      "hospital": "Clinico (Aqua C 3)",
+      "tipo": "CTS",
+      "fecha": "2027-11-11",
+      "fechaStr": "2027-11-11",
+      "notas": ""
+    },
+    {
+      "id": 141,
+      "_order": 140,
+      "hospital": "Clinico (Aqua C 3)",
+      "tipo": "Filtros",
+      "fecha": "2026-04-01",
+      "fechaStr": "2026-04-01",
+      "notas": ""
+    },
+    {
+      "id": 142,
+      "_order": 141,
+      "hospital": "Clinico (Aqua C 3)",
+      "tipo": "Carbón",
+      "fecha": "2026-04-01",
+      "fechaStr": "2026-04-01",
+      "notas": ""
+    },
+    {
+      "id": 143,
+      "_order": 142,
+      "hospital": "Clinico (Aqua C 3)",
+      "tipo": "Desinfección química",
+      "fecha": "2025-11-01",
+      "fechaStr": "2025-11-01",
+      "notas": "Verificar"
+    },
+    {
+      "id": 144,
+      "_order": 143,
+      "hospital": "Clinico (Aqua C 6)",
+      "tipo": "CTS",
+      "fecha": "2026-07-05",
+      "fechaStr": "2026-07-05",
+      "notas": ""
+    },
+    {
+      "id": 145,
+      "_order": 144,
+      "hospital": "Clinico (Aqua C 6)",
+      "tipo": "Filtros",
+      "fecha": "2025-11-01",
+      "fechaStr": "2025-11-01",
+      "notas": "Verificar"
+    },
+    {
+      "id": 146,
+      "_order": 145,
+      "hospital": "Clinico (Aqua C 6)",
+      "tipo": "Carbón",
+      "fecha": "2025-11-01",
+      "fechaStr": "2025-11-01",
+      "notas": "Verificar"
+    },
+    {
+      "id": 147,
+      "_order": 146,
+      "hospital": "Clinico (Aqua C 6)",
+      "tipo": "Desinfección química",
+      "fecha": "2026-04-01",
+      "fechaStr": "2026-04-01",
+      "notas": ""
+    },
+    {
+      "id": 148,
+      "_order": 147,
+      "hospital": "Clinico (Aqua Uno 4)",
+      "tipo": "CTS",
+      "fecha": "2027-11-06",
+      "fechaStr": "2027-11-06",
+      "notas": ""
+    },
+    {
+      "id": 149,
+      "_order": 148,
+      "hospital": "Clinico (Aqua Uno 4)",
+      "tipo": "Filtros",
+      "fecha": "2026-04-01",
+      "fechaStr": "2026-04-01",
+      "notas": ""
+    },
+    {
+      "id": 150,
+      "_order": 149,
+      "hospital": "Clinico (Aqua Uno 4)",
+      "tipo": "Carbón",
+      "fecha": "2026-04-01",
+      "fechaStr": "2026-04-01",
+      "notas": ""
+    },
+    {
+      "id": 151,
+      "_order": 150,
+      "hospital": "Clinico (Aqua Uno 4)",
+      "tipo": "Desinfección química",
+      "fecha": "2026-04-01",
+      "fechaStr": "2026-04-01",
+      "notas": ""
+    },
+    {
+      "id": 152,
+      "_order": 151,
+      "hospital": "H. HUESCA (Aqua WTU)",
+      "tipo": "CTS",
+      "fecha": "2026-07-09",
+      "fechaStr": "2026-07-09",
+      "notas": ""
+    },
+    {
+      "id": 153,
+      "_order": 152,
+      "hospital": "H. HUESCA (Aqua WTU)",
+      "tipo": "Filtros",
+      "fecha": "2024-12-23",
+      "fechaStr": "2024-12-23",
+      "notas": "Vencida - revisar"
+    },
+    {
+      "id": 154,
+      "_order": 153,
+      "hospital": "H. HUESCA (Aqua WTU)",
+      "tipo": "Carbón",
+      "fecha": "2024-12-23",
+      "fechaStr": "2024-12-23",
+      "notas": "Vencida - revisar"
+    },
+    {
+      "id": 155,
+      "_order": 154,
+      "hospital": "Santiago (AquaC)",
+      "tipo": "CTS",
+      "fecha": "2025-03-01",
+      "fechaStr": "2025-03-01",
+      "notas": "Fecha pasada - revisar"
+    },
+    {
+      "id": 156,
+      "_order": 155,
+      "hospital": "Santiago (AquaC)",
+      "tipo": "Filtros",
+      "fecha": "2023-10-25",
+      "fechaStr": "2023-10-25",
+      "notas": "Vencida - revisar"
+    },
+    {
+      "id": 157,
+      "_order": 156,
+      "hospital": "Santiago (AquaC)",
+      "tipo": "Carbón",
+      "fecha": "2023-10-25",
+      "fechaStr": "2023-10-25",
+      "notas": "Vencida - revisar"
+    },
+    {
+      "id": 158,
+      "_order": 157,
+      "hospital": "Santiago (AquaC 2CHS6121)",
+      "tipo": "CTS",
+      "fecha": "2025-03-01",
+      "fechaStr": "2025-03-01",
+      "notas": "Fecha pasada - revisar"
+    },
+    {
+      "id": 159,
+      "_order": 158,
+      "hospital": "Santiago (AquaC 2CHS6121)",
+      "tipo": "Filtros",
+      "fecha": "2023-10-25",
+      "fechaStr": "2023-10-25",
+      "notas": "Vencida - revisar"
+    },
+    {
+      "id": 160,
+      "_order": 159,
+      "hospital": "Santiago (AquaC 2CHS6121)",
+      "tipo": "Carbón",
+      "fecha": "2023-10-25",
+      "fechaStr": "2023-10-25",
+      "notas": "Vencida - revisar"
     }
   ]
 }
