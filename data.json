@@ -687,15 +687,6 @@
       "notas": ""
     },
     {
-      "id": 98,
-      "_order": 97,
-      "hospital": "Santiago A",
-      "tipo": "Cambio filtros Pretratamiento",
-      "fecha": "2025-06-16",
-      "fechaStr": "2025-06-16",
-      "notas": "Fecha pasada - revisar"
-    },
-    {
       "id": 100,
       "_order": 99,
       "hospital": "Logroño",
