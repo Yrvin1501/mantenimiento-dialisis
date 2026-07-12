@@ -876,15 +876,6 @@
       "notas": "Vencida - revisar"
     },
     {
-      "id": 107,
-      "_order": 106,
-      "hospital": "Donosti",
-      "tipo": "Membranas",
-      "fecha": "2026-03-13",
-      "fechaStr": "2026-03-13",
-      "notas": "Fecha pasada - revisar"
-    },
-    {
       "id": 108,
       "_order": 107,
       "hospital": "Servet (Aqua Uno 1)",
