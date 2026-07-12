@@ -489,15 +489,6 @@
       "notas": ""
     },
     {
-      "id": 59,
-      "_order": 58,
-      "hospital": "DIALBILBO",
-      "tipo": "CTS Osmosis 1",
-      "fecha": "2027-03-26",
-      "fechaStr": "2027-03-26",
-      "notas": ""
-    },
-    {
       "id": 60,
       "_order": 59,
       "hospital": "Policlinica",
