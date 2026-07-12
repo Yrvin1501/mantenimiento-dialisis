@@ -587,9 +587,12 @@ function serializeEvents() {
 
 function deserializeEvents(raw) {
   const data = JSON.parse(raw);
+  if (!data || !Array.isArray(data.events) || data.events.length === 0) {
+    throw new Error('No events data');
+  }
   nextId = data.nextId || 1;
   _insertOrder = data._insertOrder || 0;
-  events = (data.events || []).map((e, i) => ({
+  events = data.events.map((e, i) => ({
     ...e,
     _order: e._order !== undefined ? e._order : i,
     fecha: parseDateStr(e.fecha)
@@ -982,18 +985,20 @@ resetBtn.onclick = resetToDefault;
 document.querySelector('.export-row').appendChild(resetBtn);
 
 (async () => {
-  const restored = await loadFromStorage();
-  if (!restored) {
-    loadInitialData();
-    // First time: save initial data to GitHub if token present
-    await saveToStorage();
-  }
+  // Always load initial data first so table is never empty
+  loadInitialData();
   buildFilters();
   render();
-  // Show token banner if no token configured
-  if (!getToken()) {
-    showSyncBanner();
+  // Then try to load from GitHub or localStorage (overwrites if data found)
+  const restored = await loadFromStorage();
+  if (restored) {
+    buildFilters();
+    render();
+  } else if (getToken()) {
+    // Token present but no remote data — push initial data up
+    await saveToStorage();
   }
+  if (!getToken()) showSyncBanner();
 })();
 
 
