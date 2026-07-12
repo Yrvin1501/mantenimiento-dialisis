@@ -408,15 +408,6 @@
       "notas": ""
     },
     {
-      "id": 63,
-      "_order": 62,
-      "hospital": "Logroño",
-      "tipo": "CTS Osmosis 1",
-      "fecha": "2026-12-26",
-      "fechaStr": "2026-12-26",
-      "notas": ""
-    },
-    {
       "id": 64,
       "_order": 63,
       "hospital": "Soria",
