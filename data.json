@@ -624,15 +624,6 @@
       "notas": ""
     },
     {
-      "id": 100,
-      "_order": 99,
-      "hospital": "Logroño",
-      "tipo": "Cambio filtros Pretratamiento",
-      "fecha": "2027-01-10",
-      "fechaStr": "2027-01-10",
-      "notas": ""
-    },
-    {
       "id": 101,
       "_order": 100,
       "hospital": "Soria",
