@@ -444,15 +444,6 @@
       "notas": ""
     },
     {
-      "id": 71,
-      "_order": 70,
-      "hospital": "Logroño",
-      "tipo": "CTS CDS08 1",
-      "fecha": "2026-09-24",
-      "fechaStr": "2026-09-24",
-      "notas": ""
-    },
-    {
       "id": 72,
       "_order": 71,
       "hospital": "H. HUESCA",
