@@ -156,15 +156,6 @@
       "notas": ""
     },
     {
-      "id": 22,
-      "_order": 21,
-      "hospital": "Santiago A",
-      "tipo": "Cambio carbón 1",
-      "fecha": "2027-06-07",
-      "fechaStr": "2027-06-07",
-      "notas": ""
-    },
-    {
       "id": 23,
       "_order": 22,
       "hospital": "Txagorritxu",
