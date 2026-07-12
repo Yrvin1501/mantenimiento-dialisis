@@ -255,15 +255,6 @@
       "notas": ""
     },
     {
-      "id": 34,
-      "_order": 33,
-      "hospital": "Policlinica",
-      "tipo": "Cambio Carbón 2",
-      "fecha": "2027-09-18",
-      "fechaStr": "2027-09-18",
-      "notas": ""
-    },
-    {
       "id": 36,
       "_order": 35,
       "hospital": "Txagorritxu",
