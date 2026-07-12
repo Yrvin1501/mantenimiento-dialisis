@@ -684,13 +684,29 @@ function openTokenModal() {
 function closeTokenModal() {
   document.getElementById('token-modal').classList.remove('open');
 }
-function saveToken() {
+async function saveToken() {
   const v = document.getElementById('token-input').value.trim();
   if (v && !v.includes('…')) {
     localStorage.setItem('gh_token', v);
     closeTokenModal();
-    showSaveIndicator('✓ Token guardado');
-    loadFromStorage().then(() => { buildFilters(); render(); });
+    showSaveIndicator('⏳ Conectando con GitHub…');
+    // Try to load remote first; if empty, push local data
+    const remote = await ghGet();
+    if (remote && remote.trim() !== '{}' && remote.trim() !== '') {
+      try {
+        deserializeEvents(remote);
+        localStorage.setItem('dialisis-events', remote);
+        buildFilters();
+        render();
+        showSaveIndicator('✓ Datos cargados desde GitHub');
+        return;
+      } catch(e) {}
+    }
+    // No remote data — push current data up
+    await saveToStorage();
+    showSaveIndicator('✓ Token guardado y datos sincronizados');
+    buildFilters();
+    render();
   } else {
     closeTokenModal();
   }
@@ -699,6 +715,19 @@ function clearToken() {
   localStorage.removeItem('gh_token');
   closeTokenModal();
   showSaveIndicator('Token eliminado — modo local');
+}
+
+function showSyncBanner() {
+  let b = document.getElementById('sync-banner');
+  if (!b) {
+    b = document.createElement('div');
+    b.id = 'sync-banner';
+    b.style.cssText = 'background:#1a3a5c;color:#fff;padding:10px 20px;font-size:13px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;';
+    b.innerHTML = '<span>🔗 <strong>Sin sincronización activa.</strong> Configura tu token de GitHub para sincronizar entre dispositivos.</span>'
+      + '<button onclick="openTokenModal();document.getElementById('sync-banner').remove()" style="background:#fff;color:#1a3a5c;border:none;border-radius:5px;padding:5px 12px;font-size:12px;font-weight:600;cursor:pointer">⚙️ Configurar ahora</button>'
+      + '<button onclick="this.parentElement.remove()" style="background:transparent;color:rgba(255,255,255,0.6);border:none;font-size:18px;cursor:pointer;margin-left:auto">✕</button>';
+    document.querySelector('header').insertAdjacentElement('afterend', b);
+  }
 }
 
 let saveTimer;
@@ -954,9 +983,17 @@ document.querySelector('.export-row').appendChild(resetBtn);
 
 (async () => {
   const restored = await loadFromStorage();
-  if (!restored) loadInitialData();
+  if (!restored) {
+    loadInitialData();
+    // First time: save initial data to GitHub if token present
+    await saveToStorage();
+  }
   buildFilters();
   render();
+  // Show token banner if no token configured
+  if (!getToken()) {
+    showSyncBanner();
+  }
 })();
 
 
