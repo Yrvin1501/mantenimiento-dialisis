@@ -345,15 +345,6 @@
       "notas": ""
     },
     {
-      "id": 47,
-      "_order": 46,
-      "hospital": "Policlinica",
-      "tipo": "CTS Pretratamiento",
-      "fecha": "2026-09-04",
-      "fechaStr": "2026-09-04",
-      "notas": ""
-    },
-    {
       "id": 48,
       "_order": 47,
       "hospital": "Santiago A",
