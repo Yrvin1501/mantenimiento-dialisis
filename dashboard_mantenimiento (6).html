@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Mantenimiento — Control de Vencimientos</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Arial, sans-serif; background: #f4f6fa; color: #222; font-size: 14px; }
+
+  header {
+    background: #1a3a5c;
+    color: #fff;
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  header h1 { font-size: 18px; font-weight: 600; letter-spacing: 0.3px; }
+  header .subtitle { font-size: 12px; opacity: 0.75; margin-top: 2px; }
+  #today-display { font-size: 12px; opacity: 0.8; white-space: nowrap; }
+
+  .top-bar {
+    background: #fff;
+    border-bottom: 1px solid #dde2ea;
+    padding: 12px 24px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .top-bar label { font-size: 12px; color: #555; }
+  .top-bar select, .top-bar input {
+    border: 1px solid #c8cfd9;
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-size: 13px;
+    background: #fff;
+    color: #222;
+  }
+  .top-bar button {
+    padding: 6px 14px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+  }
+  .btn-primary { background: #1a3a5c; color: #fff; }
+  .btn-primary:hover { background: #154875; }
+  .btn-success { background: #1d9e75; color: #fff; }
+  .btn-success:hover { background: #158a63; }
+  .btn-danger { background: #e24b4a; color: #fff; }
+  .btn-danger:hover { background: #c43a39; }
+  .btn-secondary { background: #f1f3f7; color: #333; border: 1px solid #c8cfd9; }
+  .btn-secondary:hover { background: #e4e8ef; }
+
+  .kpi-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+    padding: 16px 24px 0;
+  }
+  .kpi {
+    background: #fff;
+    border-radius: 10px;
+    border: 1px solid #dde2ea;
+    padding: 14px 16px;
+    text-align: center;
+  }
+  .kpi .num { font-size: 28px; font-weight: 700; line-height: 1; }
+  .kpi .lbl { font-size: 11px; color: #666; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .kpi.overdue .num { color: #e24b4a; }
+  .kpi.soon .num { color: #ba7517; }
+  .kpi.ok .num { color: #1d9e75; }
+  .kpi.total .num { color: #1a3a5c; }
+
+  .section { padding: 16px 24px; }
+  .section h2 { font-size: 14px; font-weight: 600; color: #1a3a5c; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+
+  .alert-banner {
+    background: #fef3e2;
+    border: 1px solid #f5c060;
+    border-radius: 8px;
+    padding: 10px 16px;
+    margin: 12px 24px 0;
+    font-size: 13px;
+    color: #7a4e00;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .alert-banner.danger { background: #fdeaea; border-color: #f09595; color: #6b1c1c; }
+  .alert-banner .icon { font-size: 18px; }
+
+  .table-wrap { overflow-x: auto; border-radius: 10px; border: 1px solid #dde2ea; }
+  table { width: 100%; border-collapse: collapse; background: #fff; font-size: 13px; min-width: 800px; }
+  thead tr { background: #1a3a5c; color: #fff; }
+  thead th { padding: 10px 12px; text-align: left; font-weight: 500; font-size: 12px; letter-spacing: 0.3px; white-space: nowrap; }
+  tbody tr { border-bottom: 1px solid #edf0f5; transition: background 0.15s; }
+  tbody tr:hover { background: #f7f9fc; }
+  tbody td { padding: 9px 12px; vertical-align: middle; }
+  tbody td.editable { cursor: pointer; }
+  tbody td.editable:hover { background: #eef4ff; }
+  input[type="date"].inline-date {
+    border: 1px solid #c8cfd9;
+    border-radius: 5px;
+    padding: 3px 6px;
+    font-size: 12px;
+    background: #fff;
+    color: #222;
+    width: 130px;
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 3px 9px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .badge.vencido { background: #fdeaea; color: #a32d2d; border: 1px solid #f09595; }
+  .badge.critico { background: #fef3e2; color: #7a4e00; border: 1px solid #fac775; }
+  .badge.proximo { background: #fff8e1; color: #854f0b; border: 1px solid #ef9f27; }
+  .badge.ok { background: #eaf3de; color: #3b6d11; border: 1px solid #97c459; }
+  .badge.na { background: #f1efe8; color: #5f5e5a; border: 1px solid #d3d1c7; }
+
+  .days-cell { font-weight: 600; }
+  .days-cell.neg { color: #e24b4a; }
+  .days-cell.warn { color: #ba7517; }
+  .days-cell.ok { color: #3b6d11; }
+
+  .hospital-tag {
+    background: #e6f1fb;
+    color: #185fa5;
+    border-radius: 5px;
+    padding: 2px 7px;
+    font-size: 11px;
+    font-weight: 500;
+  }
+
+  .action-row {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+  .icon-btn {
+    background: none;
+    border: 1px solid #c8cfd9;
+    border-radius: 5px;
+    cursor: pointer;
+    padding: 4px 7px;
+    font-size: 13px;
+    color: #444;
+    line-height: 1;
+  }
+  .icon-btn:hover { background: #eef4ff; border-color: #378add; color: #185fa5; }
+  .icon-btn.del:hover { background: #fdeaea; border-color: #f09595; color: #a32d2d; }
+
+  .tabs {
+    display: flex;
+    gap: 4px;
+    padding: 0 24px;
+    border-bottom: 2px solid #dde2ea;
+    margin-top: 12px;
+  }
+  .tab {
+    padding: 9px 16px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    color: #555;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    border-radius: 6px 6px 0 0;
+    transition: all 0.15s;
+  }
+  .tab:hover { background: #f4f6fa; color: #1a3a5c; }
+  .tab.active { color: #1a3a5c; border-bottom-color: #1a3a5c; background: #fff; }
+
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: #fff;
+    border-radius: 12px;
+    padding: 24px;
+    width: 440px;
+    max-width: 95vw;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+  }
+  .modal h3 { font-size: 15px; font-weight: 600; color: #1a3a5c; margin-bottom: 16px; }
+  .modal label { display: block; font-size: 12px; color: #555; margin-bottom: 4px; margin-top: 12px; }
+  .modal input, .modal select, .modal textarea {
+    width: 100%;
+    border: 1px solid #c8cfd9;
+    border-radius: 7px;
+    padding: 8px 10px;
+    font-size: 13px;
+    color: #222;
+    background: #fff;
+  }
+  .modal textarea { resize: vertical; min-height: 60px; }
+  .modal .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 20px; }
+
+  .legend {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    padding: 8px 24px;
+    font-size: 11px;
+    color: #555;
+    align-items: center;
+  }
+  .legend-item { display: flex; align-items: center; gap: 5px; }
+
+  .export-row { display: flex; gap: 8px; padding: 12px 24px 0; flex-wrap: wrap; }
+
+  .notes-cell { max-width: 180px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #666; font-size: 12px; cursor: help; }
+
+  @media print {
+    header, .top-bar, .export-row, .tabs, .action-row, .modal-overlay { display: none !important; }
+    .section { padding: 8px 0; }
+    .kpi-row { padding: 0; }
+    body { background: #fff; }
+    table { font-size: 11px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="subtitle">Sistema de Mantenimiento de Equipos de Diálisis</div>
+    <h1>Dashboard — Control de Vencimientos</h1>
+  </div>
+  <div id="today-display"></div>
+</header>
+
+<div id="alert-area"></div>
+
+<div class="kpi-row" id="kpi-row"></div>
+
+<div class="export-row">
+  <button class="btn-success" onclick="exportCSV()">⬇ Exportar CSV</button>
+  <button class="btn-primary" onclick="openAddModal()">+ Nuevo evento</button>
+  <button class="btn-secondary" onclick="window.print()">🖨 Imprimir</button>
+</div>
+
+<div class="tabs" id="tabs">
+  <div class="tab active" onclick="setTab('all',this)">Todos</div>
+  <div class="tab" onclick="setTab('vencido',this)">⛔ Vencidos</div>
+  <div class="tab" onclick="setTab('critico',this)">🔴 Críticos (≤7d)</div>
+  <div class="tab" onclick="setTab('proximo',this)">🟡 Próximos (≤30d)</div>
+  <div class="tab" onclick="setTab('ok',this)">🟢 Al día</div>
+</div>
+
+<div class="legend">
+  <span style="font-weight:600;color:#1a3a5c">Leyenda:</span>
+  <span class="legend-item"><span class="badge vencido">Vencido</span> Fecha superada</span>
+  <span class="legend-item"><span class="badge critico">Crítico</span> Vence en ≤7 días</span>
+  <span class="legend-item"><span class="badge proximo">Próximo</span> Vence en 8-30 días</span>
+  <span class="legend-item"><span class="badge ok">Al día</span> Más de 30 días</span>
+  <span class="legend-item"><span class="badge na">N/A</span> Sin fecha / No aplica</span>
+</div>
+
+<div class="top-bar">
+  <label>Hospital: <select id="filter-hospital" onchange="applyFilters()"><option value="">Todos</option></select></label>
+  <label>Tipo: <select id="filter-tipo" onchange="applyFilters()"><option value="">Todos</option></select></label>
+  <label>Estado: <select id="filter-estado" onchange="applyFilters()"><option value="">Todos</option></select></label>
+  <label>Buscar: <input type="text" id="filter-search" placeholder="Hospital, tipo, notas…" oninput="applyFilters()" style="width:180px"></label>
+  <button class="btn-secondary" onclick="clearFilters()">✕ Limpiar</button>
+</div>
+
+<div class="section">
+  <div class="table-wrap">
+    <table id="main-table">
+      <thead>
+        <tr>
+          <th onclick="sortTable('hospital')" style="cursor:pointer">Hospital ⇅</th>
+          <th onclick="sortTable('tipo')" style="cursor:pointer">Tipo de mantenimiento ⇅</th>
+          <th onclick="sortTable('fecha')" style="cursor:pointer">Próxima fecha ⇅</th>
+          <th onclick="sortTable('dias')" style="cursor:pointer">Días restantes ⇅</th>
+          <th>Estado</th>
+          <th>Notas</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="table-body"></tbody>
+    </table>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal">
+    <h3 id="modal-title">Nuevo evento de mantenimiento</h3>
+    <label>Hospital</label>
+    <input type="text" id="m-hospital" placeholder="Nombre del hospital">
+    <label>Tipo de mantenimiento</label>
+    <input type="text" id="m-tipo" placeholder="Ej: Desinfección RO1">
+    <label>Próxima fecha de vencimiento</label>
+    <input type="date" id="m-fecha">
+    <label>Notas (opcional)</label>
+    <textarea id="m-notas" placeholder="Observaciones, número de serie, etc."></textarea>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="closeModal()">Cancelar</button>
+      <button class="btn-primary" onclick="saveEvent()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// 🟢 CONFIGURACIÓN DE SUPABASE — sustituye estos 2 valores por los
+// de TU proyecto (Supabase → Project Settings → API →
+// "Project URL" y "anon public" key). No son secretos: la
+// seguridad real la dan las Row Level Security Policies de la tabla.
+// ============================================================
+const SUPABASE_URL = "https://fbairzjzuugekbwjcqni.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_MZk-1GXkOd6EVs-vewaUVQ_hm4lqgai";
+
+let sb = null;
+try {
+  sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+} catch (e) {
+  console.error('Supabase no se pudo inicializar. Revisa SUPABASE_URL / SUPABASE_ANON_KEY.', e);
+}
+
+window.cloudDB = {
+  async save(payloadJson) {
+    if (!sb) throw new Error('Supabase no está configurado todavía.');
+    const { error } = await sb.from('mantenimiento')
+      .update({ data: JSON.parse(payloadJson), updated_at: new Date().toISOString() })
+      .eq('id', 1);
+    if (error) throw error;
+  },
+  async load() {
+    if (!sb) throw new Error('Supabase no está configurado todavía.');
+    const { data, error } = await sb.from('mantenimiento').select('data').eq('id', 1).single();
+    if (error) throw error;
+    return data ? JSON.stringify(data.data) : null;
+  },
+  listen(callback) {
+    if (!sb) return;
+    sb.channel('mantenimiento-changes')
+      .on('postgres_changes',
+        { event: 'UPDATE', schema: 'public', table: 'mantenimiento', filter: 'id=eq.1' },
+        payload => callback(JSON.stringify(payload.new.data))
+      )
+      .subscribe();
+  }
+};
+// ============================================================
+
+const TODAY = new Date();
+TODAY.setHours(0,0,0,0);
+
+let events = [];
+let editingId = null;
+let currentTab = 'all';
+let sortCol = 'dias';
+let sortAsc = true;
+
+const RAW = [
+  ["ALCAÑIZ","Desinfección RO1","2026-07-17"],
+  ["MIGUEL SERVET 1ª","Desinfección RO1","2026-11-17"],
+  ["MIGUEL SERVET 6ª","Desinfección RO1","2026-11-17"],
+  ["CLINICO","Desinfección RO1","2026-05-26"],
+  ["INOCENCIO","Desinfección RO1","2026-06-21"],
+  ["H. HUESCA","Desinfección RO1","2026-05-01"],
+  ["Barbastro","Desinfección RO1","2026-04-01"],
+  ["H. JACA","Desinfección RO1","2026-05-27"],
+  ["DIALBILBO","Desinfección RO1","2026-08-10"],
+  ["Logroño","Desinfección RO1","2026-06-05"],
+  ["Soria","Desinfección RO1","2026-05-05"],
+  ["ALCAÑIZ","Cambio carbón 1","2028-01-01"],
+  ["MIGUEL SERVET 1ª","Cambio carbón 1","2026-06-01"],
+  ["MIGUEL SERVET 6ª","Cambio carbón 1","2026-06-01"],
+  ["CLINICO","Cambio carbón 1","2025-11-28"],
+  ["INOCENCIO","Cambio carbón 1","2026-07-25"],
+  ["H. HUESCA","Cambio carbón 1","2026-08-12"],
+  ["Barbastro","Cambio carbón 1","2026-07-10"],
+  ["H. JACA","Cambio carbón 1","2026-08-14"],
+  ["DIALBILBO","Cambio carbón 1","2027-05-18"],
+  ["Policlinica","Cambio carbón 1","2026-03-24"],
+  ["Santiago A","Cambio carbón 1","2027-06-07"],
+  ["Txagorritxu","Cambio carbón 1","2027-01-01"],
+  ["Logroño","Cambio carbón 1","2028-04-29"],
+  ["ALCAÑIZ","Cambio Carbón 2","2028-01-01"],
+  ["MIGUEL SERVET 1ª","Cambio Carbón 2","2027-06-01"],
+  ["MIGUEL SERVET 6ª","Cambio Carbón 2","2027-06-01"],
+  ["CLINICO","Cambio Carbón 2","2026-05-15"],
+  ["INOCENCIO","Cambio Carbón 2","2026-07-26"],
+  ["H. HUESCA","Cambio Carbón 2","2027-08-16"],
+  ["Barbastro","Cambio Carbón 2","2027-05-22"],
+  ["H. JACA","Cambio Carbón 2","2026-08-14"],
+  ["DIALBILBO","Cambio Carbón 2","2026-07-03"],
+  ["Policlinica","Cambio Carbón 2","2027-09-18"],
+  ["Donosti","Cambio Carbón 2","2026-09-29"],
+  ["Txagorritxu","Cambio Carbón 2","2027-01-01"],
+  ["Logroño","Cambio Carbón 2","2026-03-05"],
+  ["ALCAÑIZ","CTS Pretratamiento","2028-01-01"],
+  ["MIGUEL SERVET 1ª","CTS Pretratamiento","2026-05-15"],
+  ["MIGUEL SERVET 6ª","CTS Pretratamiento","2026-05-15"],
+  ["CLINICO","CTS Pretratamiento","2027-11-06"],
+  ["INOCENCIO","CTS Pretratamiento","2026-07-23"],
+  ["H. HUESCA","CTS Pretratamiento","2026-09-18"],
+  ["Barbastro","CTS Pretratamiento","2026-08-28"],
+  ["H. JACA","CTS Pretratamiento","2026-08-13"],
+  ["DIALBILBO","CTS Pretratamiento","2027-03-26"],
+  ["Policlinica","CTS Pretratamiento","2026-09-04"],
+  ["Santiago A","CTS Pretratamiento","2027-02-10"],
+  ["Txagorritxu","CTS Pretratamiento","2027-01-01"],
+  ["Soria","CTS Pretratamiento","2026-10-29"],
+  ["ALCAÑIZ","CTS Osmosis 1","2028-01-01"],
+  ["MIGUEL SERVET 1ª","CTS Osmosis 1","2026-05-15"],
+  ["MIGUEL SERVET 6ª","CTS Osmosis 1","2026-05-15"],
+  ["CLINICO","CTS Osmosis 1","2027-11-06"],
+  ["INOCENCIO","CTS Osmosis 1","2026-07-23"],
+  ["H. HUESCA","CTS Osmosis 1","2026-09-18"],
+  ["Barbastro","CTS Osmosis 1","2026-07-10"],
+  ["H. JACA","CTS Osmosis 1","2026-08-13"],
+  ["DIALBILBO","CTS Osmosis 1","2027-03-26"],
+  ["Policlinica","CTS Osmosis 1","2026-09-04"],
+  ["Santiago A","CTS Osmosis 1","2027-02-10"],
+  ["Txagorritxu","CTS Osmosis 1","2027-01-01"],
+  ["Logroño","CTS Osmosis 1","2026-12-26"],
+  ["Soria","CTS Osmosis 1","2026-10-29"],
+  ["Barbastro","CTS Osmosis 2","2026-07-10"],
+  ["Santiago A","CTS Osmosis 2","2027-02-10"],
+  ["Txagorritxu","CTS Osmosis 2","2027-01-01"],
+  ["H. HUESCA","CTS CDS08 1","2026-11-15"],
+  ["DIALBILBO","CTS CDS08 1","2027-05-18"],
+  ["Policlinica","CTS CDS08 1","2027-11-23"],
+  ["Logroño","CTS CDS08 1","2026-09-24"],
+  ["H. HUESCA","CTS CDS08 2","2026-11-15"],
+  ["DIALBILBO","CTS CDS08 2","2027-05-18"],
+  ["Logroño","CTS CDS08 2","2026-09-24"],
+  ["ALCAÑIZ","CTS CDS 03","2028-01-01"],
+  ["MIGUEL SERVET 1ª","CTS CDS 03","2026-05-15"],
+  ["MIGUEL SERVET 6ª","CTS CDS 03","2026-05-15"],
+  ["CLINICO","CTS CDS 03","2027-11-06"],
+  ["INOCENCIO","CTS CDS 03","2026-07-23"],
+  ["Barbastro","CTS CDS 03","2026-03-12","Fecha pasada - revisar"],
+  ["H. JACA","CTS CDS 03","2026-08-13"],
+  ["Militar","CTS CDS 03","2028-03-01"],
+  ["Teruel","CTS CDS 03","2026-08-23"],
+  ["Donosti","CTS CDS 03","2026-02-28","Fecha pasada - revisar"],
+  ["Santiago A","CTS CDS 03","2027-02-10"],
+  ["Txagorritxu","CTS CDS 03","2027-01-01"],
+  ["Soria","CTS CDS 03","2026-11-04"],
+  ["DIALBILBO","Cambio filtros Diasafe","2026-11-13"],
+  ["Logroño","Cambio filtros Diasafe","2026-09-29"],
+  ["ALCAÑIZ","Cambio filtros Pretratamiento","2026-06-17"],
+  ["MIGUEL SERVET 1ª","Cambio filtros Pretratamiento","2026-11-17"],
+  ["MIGUEL SERVET 6ª","Cambio filtros Pretratamiento","2026-11-17"],
+  ["CLINICO","Cambio filtros Pretratamiento","2026-04-05"],
+  ["INOCENCIO","Cambio filtros Pretratamiento","2026-09-24"],
+  ["H. HUESCA","Cambio filtros Pretratamiento","2026-03-02","Fecha pasada - revisar"],
+  ["Barbastro","Cambio filtros Pretratamiento","2026-04-12"],
+  ["H. JACA","Cambio filtros Pretratamiento","2026-06-27"],
+  ["Santiago A","Cambio filtros Pretratamiento","2025-06-16","Fecha pasada - revisar"],
+  ["Txagorritxu","Cambio filtros Pretratamiento","2026-02-14","Fecha pasada - revisar"],
+  ["Logroño","Cambio filtros Pretratamiento","2027-01-10"],
+  ["Soria","Cambio filtros Pretratamiento","2026-11-05"],
+  ["MIGUEL SERVET 6ª","Membranas","2025-12-03","Vencida - revisar"],
+  ["CLINICO","Membranas","2025-12-15","Vencida - revisar"],
+  ["INOCENCIO","Membranas","2025-12-12","Vencida - revisar"],
+  ["H. HUESCA","Membranas","2025-04-01","Vencida - revisar"],
+  ["Barbastro","Membranas","2025-12-12","Vencida - revisar"],
+  ["Donosti","Membranas","2026-03-13","Fecha pasada - revisar"],
+  ["Servet (Aqua Uno 1)","CTS","2026-09-03"],
+  ["Servet (Aqua Uno 1)","Filtros","2026-01-01","Verificar"],
+  ["Servet (Aqua Uno 1)","Carbón","2026-01-01","Verificar"],
+  ["Servet (Aqua Uno 1)","Desinfección química","2025-12-01","Verificar"],
+  ["Servet (Aqua Uno 2)","CTS","2026-08-27"],
+  ["Servet (Aqua Uno 2)","Filtros","2026-01-01"],
+  ["Servet (Aqua Uno 2)","Carbón","2026-01-01"],
+  ["Servet (Aqua Uno 2)","Desinfección química","2025-06-01","Verificar"],
+  ["Servet (Aqua Uno 3)","CTS","2026-09-11"],
+  ["Servet (Aqua Uno 3)","Filtros","2026-01-01"],
+  ["Servet (Aqua Uno 3)","Carbón","2026-01-01"],
+  ["Servet (Aqua Uno 3)","Desinfección química","2026-02-01","Verificar"],
+  ["Servet (Aqua Uno 4)","CTS","2026-09-11"],
+  ["Servet (Aqua Uno 4)","Filtros","2026-01-01"],
+  ["Servet (Aqua Uno 4)","Carbón","2026-01-01"],
+  ["Servet (Aqua Uno 4)","Desinfección química","2025-06-01","Verificar"],
+  ["Servet (rAqua C H 5)","CTS","2027-12-15"],
+  ["Servet (rAqua C H 5)","Filtros","2025-12-01","Verificar"],
+  ["Servet (rAqua C H 5)","Carbón","2025-12-01","Verificar"],
+  ["Servet (rAqua C H 5)","Desinfección química","2025-07-01","Verificar"],
+  ["Servet (Aqua C H 6)","CTS","2027-12-15"],
+  ["Servet (Aqua C H 6)","Filtros","2026-01-01"],
+  ["Servet (Aqua C H 6)","Carbón","2026-01-01"],
+  ["Servet (Aqua C H 6)","Desinfección química","2026-01-01"],
+  ["Servet (Infantil 1079)","CTS","2027-06-30"],
+  ["Servet (Infantil 1079)","Filtros","2026-01-01"],
+  ["Servet (Infantil 1079)","Carbón","2025-09-01","Verificar"],
+  ["Servet (Infantil 1079)","Desinfección química","2026-01-01"],
+  ["Servet (Aqua Uno 5)","CTS","2026-07-05"],
+  ["Servet (Aqua Uno 5)","Filtros","2026-01-01"],
+  ["Servet (Aqua Uno 5)","Carbón","2025-11-01","Verificar"],
+  ["Servet (Aqua Uno 5)","Desinfección química","2025-11-01","Verificar"],
+  ["Clinico (Aqua C 3)","CTS","2027-11-11"],
+  ["Clinico (Aqua C 3)","Filtros","2026-04-01"],
+  ["Clinico (Aqua C 3)","Carbón","2026-04-01"],
+  ["Clinico (Aqua C 3)","Desinfección química","2025-11-01","Verificar"],
+  ["Clinico (Aqua C 6)","CTS","2026-07-05"],
+  ["Clinico (Aqua C 6)","Filtros","2025-11-01","Verificar"],
+  ["Clinico (Aqua C 6)","Carbón","2025-11-01","Verificar"],
+  ["Clinico (Aqua C 6)","Desinfección química","2026-04-01"],
+  ["Clinico (Aqua Uno 4)","CTS","2027-11-06"],
+  ["Clinico (Aqua Uno 4)","Filtros","2026-04-01"],
+  ["Clinico (Aqua Uno 4)","Carbón","2026-04-01"],
+  ["Clinico (Aqua Uno 4)","Desinfección química","2026-04-01"],
+  ["H. HUESCA (Aqua WTU)","CTS","2026-07-09"],
+  ["H. HUESCA (Aqua WTU)","Filtros","2024-12-23","Vencida - revisar"],
+  ["H. HUESCA (Aqua WTU)","Carbón","2024-12-23","Vencida - revisar"],
+  ["Santiago (AquaC)","CTS","2025-03-01","Fecha pasada - revisar"],
+  ["Santiago (AquaC)","Filtros","2023-10-25","Vencida - revisar"],
+  ["Santiago (AquaC)","Carbón","2023-10-25","Vencida - revisar"],
+  ["Santiago (AquaC 2CHS6121)","CTS","2025-03-01","Fecha pasada - revisar"],
+  ["Santiago (AquaC 2CHS6121)","Filtros","2023-10-25","Vencida - revisar"],
+  ["Santiago (AquaC 2CHS6121)","Carbón","2023-10-25","Vencida - revisar"],
+];
+
+function parseDateStr(s) {
+  if (!s) return null;
+  const d = new Date(s);
+  if (isNaN(d)) return null;
+  d.setHours(0,0,0,0);
+  return d;
+}
+
+function daysFromToday(date) {
+  if (!date) return null;
+  return Math.round((date - TODAY) / 86400000);
+}
+
+function getStatus(days) {
+  if (days === null) return 'na';
+  if (days < 0) return 'vencido';
+  if (days <= 7) return 'critico';
+  if (days <= 30) return 'proximo';
+  return 'ok';
+}
+
+function statusLabel(s) {
+  return { vencido: 'Vencido', critico: 'Crítico', proximo: 'Próximo', ok: 'Al día', na: 'N/A' }[s] || s;
+}
+
+function fmtDate(d) {
+  if (!d) return '—';
+  return d.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
+}
+
+function toInputDate(d) {
+  if (!d) return '';
+  return d.toISOString().split('T')[0];
+}
+
+let nextId = 1;
+function loadInitialData() {
+  events = RAW.map(r => ({
+    id: nextId++,
+    hospital: r[0],
+    tipo: r[1],
+    fecha: parseDateStr(r[2]),
+    fechaStr: r[2] || '',
+    notas: r[3] || ''
+  }));
+}
+
+function buildFilters() {
+  const hospitals = [...new Set(events.map(e => e.hospital))].sort();
+  const tipos = [...new Set(events.map(e => e.tipo))].sort();
+  const fh = document.getElementById('filter-hospital');
+  const ft = document.getElementById('filter-tipo');
+  const fe = document.getElementById('filter-estado');
+  fh.innerHTML = '<option value="">Todos los hospitales</option>' + hospitals.map(h => `<option>${h}</option>`).join('');
+  ft.innerHTML = '<option value="">Todos los tipos</option>' + tipos.map(t => `<option>${t}</option>`).join('');
+  fe.innerHTML = `<option value="">Todos los estados</option><option value="vencido">Vencido</option><option value="critico">Crítico</option><option value="proximo">Próximo</option><option value="ok">Al día</option>`;
+}
+
+function filteredEvents() {
+  const h = document.getElementById('filter-hospital').value;
+  const t = document.getElementById('filter-tipo').value;
+  const e = document.getElementById('filter-estado').value;
+  const s = document.getElementById('filter-search').value.toLowerCase();
+  return events.filter(ev => {
+    const days = daysFromToday(ev.fecha);
+    const status = getStatus(days);
+    if (h && ev.hospital !== h) return false;
+    if (t && ev.tipo !== t) return false;
+    if (e && status !== e) return false;
+    if (currentTab !== 'all' && status !== currentTab) return false;
+    if (s && !(ev.hospital.toLowerCase().includes(s) || ev.tipo.toLowerCase().includes(s) || (ev.notas||'').toLowerCase().includes(s))) return false;
+    return true;
+  });
+}
+
+function sortedEvents(arr) {
+  return [...arr].sort((a, b) => {
+    let va, vb;
+    if (sortCol === 'hospital') { va = a.hospital; vb = b.hospital; }
+    else if (sortCol === 'tipo') { va = a.tipo; vb = b.tipo; }
+    else if (sortCol === 'fecha') { va = a.fecha ? a.fecha.getTime() : Infinity; vb = b.fecha ? b.fecha.getTime() : Infinity; }
+    else { va = a.fecha ? daysFromToday(a.fecha) : 99999; vb = b.fecha ? daysFromToday(b.fecha) : 99999; }
+    if (va < vb) return sortAsc ? -1 : 1;
+    if (va > vb) return sortAsc ? 1 : -1;
+    return 0;
+  });
+}
+
+function renderTable() {
+  const arr = sortedEvents(filteredEvents());
+  const tbody = document.getElementById('table-body');
+  if (arr.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:32px;color:#888">No hay eventos con los filtros actuales.</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = arr.map(ev => {
+    const days = daysFromToday(ev.fecha);
+    const status = getStatus(days);
+    const daysDisp = days === null ? '—' : (days < 0 ? `${days}d` : `+${days}d`);
+    const daysCls = days === null ? '' : (days < 0 ? 'neg' : (days <= 30 ? 'warn' : 'ok'));
+    const notesHtml = ev.notas ? `<span class="notes-cell" title="${ev.notas.replace(/"/g,"&quot;")}">${ev.notas}</span>` : '<span style="color:#ccc">—</span>';
+    return `<tr>
+      <td><span class="hospital-tag">${ev.hospital}</span></td>
+      <td>${ev.tipo}</td>
+      <td class="editable" onclick="editDate(${ev.id})" title="Clic para editar fecha">
+        <span id="date-disp-${ev.id}">${fmtDate(ev.fecha)}</span>
+        <input type="date" class="inline-date" id="date-inp-${ev.id}" value="${ev.fecha ? toInputDate(ev.fecha) : ''}" style="display:none" onchange="commitDate(${ev.id})" onblur="cancelDate(${ev.id})">
+      </td>
+      <td class="days-cell ${daysCls}">${daysDisp}</td>
+      <td><span class="badge ${status}">${statusLabel(status)}</span></td>
+      <td>${notesHtml}</td>
+      <td><div class="action-row">
+        <button class="icon-btn" onclick="openEditModal(${ev.id})" title="Editar">✏</button>
+        <button class="icon-btn del" onclick="deleteEvent(${ev.id})" title="Eliminar">🗑</button>
+      </div></td>
+    </tr>`;
+  }).join('');
+}
+
+function renderKPIs() {
+  const all = events.map(e => ({ days: daysFromToday(e.fecha), status: getStatus(daysFromToday(e.fecha)) }));
+  const overdue = all.filter(e => e.status === 'vencido').length;
+  const critico = all.filter(e => e.status === 'critico').length;
+  const proximo = all.filter(e => e.status === 'proximo').length;
+  const ok = all.filter(e => e.status === 'ok').length;
+  document.getElementById('kpi-row').innerHTML = `
+    <div class="kpi total"><div class="num">${events.length}</div><div class="lbl">Total eventos</div></div>
+    <div class="kpi overdue"><div class="num">${overdue}</div><div class="lbl">⛔ Vencidos</div></div>
+    <div class="kpi critico" style="--num-color:#ba7517"><div class="num" style="color:#ba7517">${critico}</div><div class="lbl">🔴 Críticos (≤7d)</div></div>
+    <div class="kpi soon"><div class="num" style="color:#854f0b">${proximo}</div><div class="lbl">🟡 Próximos (≤30d)</div></div>
+    <div class="kpi ok"><div class="num">${ok}</div><div class="lbl">🟢 Al día</div></div>
+  `;
+}
+
+function renderAlerts() {
+  const area = document.getElementById('alert-area');
+  const overdue = events.filter(e => getStatus(daysFromToday(e.fecha)) === 'vencido');
+  const critico = events.filter(e => getStatus(daysFromToday(e.fecha)) === 'critico');
+  let html = '';
+  if (overdue.length > 0) {
+    html += `<div class="alert-banner danger"><span class="icon">⛔</span><strong>${overdue.length} evento(s) VENCIDO(S):</strong> ${overdue.slice(0,5).map(e => `${e.hospital} — ${e.tipo}`).join(' | ')}${overdue.length > 5 ? ` y ${overdue.length-5} más…` : ''}</div>`;
+  }
+  if (critico.length > 0) {
+    html += `<div class="alert-banner"><span class="icon">⚠️</span><strong>${critico.length} evento(s) CRÍTICO(S) (vencen en ≤7 días):</strong> ${critico.slice(0,4).map(e => `${e.hospital} — ${e.tipo} (${daysFromToday(e.fecha)}d)`).join(' | ')}${critico.length > 4 ? ` y ${critico.length-4} más…` : ''}</div>`;
+  }
+  area.innerHTML = html;
+}
+
+function render() {
+  renderKPIs();
+  renderAlerts();
+  renderTable();
+}
+
+function applyFilters() { renderTable(); }
+function clearFilters() {
+  document.getElementById('filter-hospital').value = '';
+  document.getElementById('filter-tipo').value = '';
+  document.getElementById('filter-estado').value = '';
+  document.getElementById('filter-search').value = '';
+  renderTable();
+}
+
+function setTab(tab, el) {
+  currentTab = tab;
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  renderTable();
+}
+
+function sortTable(col) {
+  if (sortCol === col) sortAsc = !sortAsc;
+  else { sortCol = col; sortAsc = true; }
+  renderTable();
+}
+
+function editDate(id) {
+  const ev = events.find(e => e.id === id);
+  if (!ev) return;
+  document.getElementById('date-disp-' + id).style.display = 'none';
+  document.getElementById('date-inp-' + id).style.display = 'inline-block';
+  document.getElementById('date-inp-' + id).focus();
+}
+function commitDate(id) {
+  const inp = document.getElementById('date-inp-' + id);
+  const ev = events.find(e => e.id === id);
+  if (!ev) return;
+  ev.fecha = parseDateStr(inp.value);
+  ev.fechaStr = inp.value;
+  inp.style.display = 'none';
+  render();
+}
+function cancelDate(id) {
+  const inp = document.getElementById('date-inp-' + id);
+  if (inp) inp.style.display = 'none';
+  const disp = document.getElementById('date-disp-' + id);
+  if (disp) disp.style.display = '';
+}
+
+function openAddModal() {
+  editingId = null;
+  document.getElementById('modal-title').textContent = 'Nuevo evento de mantenimiento';
+  document.getElementById('m-hospital').value = '';
+  document.getElementById('m-tipo').value = '';
+  document.getElementById('m-fecha').value = '';
+  document.getElementById('m-notas').value = '';
+  document.getElementById('modal-overlay').classList.add('open');
+}
+function openEditModal(id) {
+  const ev = events.find(e => e.id === id);
+  if (!ev) return;
+  editingId = id;
+  document.getElementById('modal-title').textContent = 'Editar evento';
+  document.getElementById('m-hospital').value = ev.hospital;
+  document.getElementById('m-tipo').value = ev.tipo;
+  document.getElementById('m-fecha').value = ev.fecha ? toInputDate(ev.fecha) : '';
+  document.getElementById('m-notas').value = ev.notas || '';
+  document.getElementById('modal-overlay').classList.add('open');
+}
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('open');
+}
+function saveEvent() {
+  const hospital = document.getElementById('m-hospital').value.trim();
+  const tipo = document.getElementById('m-tipo').value.trim();
+  const fechaStr = document.getElementById('m-fecha').value;
+  const notas = document.getElementById('m-notas').value.trim();
+  if (!hospital || !tipo) { alert('Hospital y Tipo son obligatorios.'); return; }
+  if (editingId) {
+    const ev = events.find(e => e.id === editingId);
+    ev.hospital = hospital; ev.tipo = tipo;
+    ev.fecha = parseDateStr(fechaStr); ev.fechaStr = fechaStr; ev.notas = notas;
+  } else {
+    events.push({ id: nextId++, hospital, tipo, fecha: parseDateStr(fechaStr), fechaStr, notas });
+  }
+  closeModal();
+  buildFilters();
+  render();
+}
+function deleteEvent(id) {
+  if (!confirm('¿Eliminar este evento?')) return;
+  events = events.filter(e => e.id !== id);
+  saveToStorage();
+  render();
+}
+
+function exportCSV() {
+  const arr = sortedEvents(filteredEvents());
+  const rows = [['Hospital','Tipo de mantenimiento','Próxima fecha','Días restantes','Estado','Notas']];
+  arr.forEach(ev => {
+    const days = daysFromToday(ev.fecha);
+    rows.push([ev.hospital, ev.tipo, fmtDate(ev.fecha), days !== null ? days : '', statusLabel(getStatus(days)), ev.notas || '']);
+  });
+  const csv = rows.map(r => r.map(c => '"' + String(c).replace(/"/g, '""') + '"').join(',')).join('\n');
+  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'mantenimiento_dialisis.csv';
+  a.click();
+}
+
+let lastSavedSnapshot = '';
+
+function snapshotPayload() {
+  return JSON.stringify({ nextId, events: events.map(e => ({ ...e, fecha: e.fecha ? e.fecha.toISOString().split('T')[0] : null })) });
+}
+
+function applyRemotePayload(raw) {
+  const data = JSON.parse(raw);
+  nextId = data.nextId || 1;
+  events = (data.events || []).map(e => ({ ...e, fecha: parseDateStr(e.fecha) }));
+  lastSavedSnapshot = raw;
+}
+
+async function saveToStorage() {
+  try {
+    const payload = snapshotPayload();
+    lastSavedSnapshot = payload;
+    await window.cloudDB.save(payload);
+    showSaveIndicator('✓ Guardado y sincronizado');
+  } catch(err) {
+    showSaveIndicator('⚠ Error al guardar: ' + err.message, true);
+  }
+}
+
+async function loadFromStorage() {
+  try {
+    const raw = await window.cloudDB.load();
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (parsed && Array.isArray(parsed.events) && parsed.events.length > 0) {
+        applyRemotePayload(raw);
+        return true;
+      }
+    }
+  } catch(err) {
+    // todavía no hay datos remotos u otro error de lectura
+  }
+  return false;
+}
+
+// Suscripción en tiempo real: Firestore empuja los cambios al instante,
+// sin necesidad de refrescar ni sondear.
+function startRealtimeSync() {
+  window.cloudDB.listen((raw) => {
+    if (!raw || raw === lastSavedSnapshot) return;
+    const editingActive = document.getElementById('modal-overlay').classList.contains('open')
+      || document.querySelectorAll('input.inline-date[style*="inline-block"]').length > 0;
+    if (editingActive) return; // se aplicará en cuanto termines de editar
+    applyRemotePayload(raw);
+    buildFilters();
+    render();
+    showSaveIndicator('🔄 Actualizado por otro usuario');
+  });
+}
+
+async function resetToDefault() {
+  if (!confirm('¿Restaurar los datos originales del Excel? Se perderán todos los cambios guardados para TODOS los usuarios.')) return;
+  loadInitialData();
+  nextId = events.length + 1;
+  buildFilters();
+  render();
+  await saveToStorage();
+  showSaveIndicator('✓ Datos originales restaurados');
+}
+
+let saveTimer;
+function showSaveIndicator(msg, warn) {
+  let ind = document.getElementById('save-ind');
+  if (!ind) {
+    ind = document.createElement('span');
+    ind.id = 'save-ind';
+    ind.style.cssText = 'font-size:12px;padding:3px 10px;border-radius:5px;margin-left:12px;transition:opacity 0.4s;';
+    document.querySelector('.export-row').appendChild(ind);
+  }
+  ind.textContent = msg;
+  ind.style.background = warn ? '#fdeaea' : '#eaf3de';
+  ind.style.color = warn ? '#a32d2d' : '#3b6d11';
+  ind.style.opacity = '1';
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => { ind.style.opacity = '0'; }, 3000);
+}
+
+saveEvent = async function() {
+  const hospital = document.getElementById('m-hospital').value.trim();
+  const tipo = document.getElementById('m-tipo').value.trim();
+  const fechaStr = document.getElementById('m-fecha').value;
+  const notas = document.getElementById('m-notas').value.trim();
+  if (!hospital || !tipo) { alert('Hospital y Tipo son obligatorios.'); return; }
+  if (editingId) {
+    const ev = events.find(e => e.id === editingId);
+    ev.hospital = hospital; ev.tipo = tipo;
+    ev.fecha = parseDateStr(fechaStr); ev.fechaStr = fechaStr; ev.notas = notas;
+  } else {
+    events.push({ id: nextId++, hospital, tipo, fecha: parseDateStr(fechaStr), fechaStr, notas });
+  }
+  closeModal();
+  buildFilters();
+  render();
+  await saveToStorage();
+};
+
+commitDate = async function(id) {
+  const inp = document.getElementById('date-inp-' + id);
+  const ev = events.find(e => e.id === id);
+  if (!ev) return;
+  ev.fecha = parseDateStr(inp.value);
+  ev.fechaStr = inp.value;
+  inp.style.display = 'none';
+  render();
+  await saveToStorage();
+};
+
+deleteEvent = async function(id) {
+  if (!confirm('¿Eliminar este evento? Se eliminará para todos los usuarios.')) return;
+  events = events.filter(e => e.id !== id);
+  render();
+  await saveToStorage();
+};
+
+document.getElementById('today-display').textContent = 'Hoy: ' + TODAY.toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+document.getElementById('modal-overlay').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+const resetBtn = document.createElement('button');
+resetBtn.className = 'btn-secondary';
+resetBtn.textContent = '↺ Restaurar original';
+resetBtn.onclick = resetToDefault;
+document.querySelector('.export-row').appendChild(resetBtn);
+
+(async function init() {
+  showSaveIndicator('⏳ Cargando datos compartidos…');
+  try {
+    const restored = await loadFromStorage();
+    if (!restored) {
+      loadInitialData();
+      lastSavedSnapshot = '';
+      await saveToStorage();
+    }
+    buildFilters();
+    render();
+    showSaveIndicator(restored ? '✓ Datos sincronizados cargados' : '✓ Datos iniciales publicados');
+    startRealtimeSync();
+  } catch (err) {
+    loadInitialData();
+    buildFilters();
+    render();
+    showSaveIndicator('⚠ Sin conexión a Supabase — configura SUPABASE_URL / SUPABASE_ANON_KEY arriba en el código. Trabajando solo en local.', true);
+  }
+})();
+</script>
+</body>
+</html>
