@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dashboard Mantenimiento — Control de Vencimientos</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
+
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: Arial, sans-serif; background: #f4f6fa; color: #222; font-size: 14px; }
 
@@ -235,10 +235,10 @@
     body { background: #fff; }
     table { font-size: 11px; }
   }
+
 </style>
 </head>
 <body>
-
 <header>
   <div>
     <div class="subtitle">Sistema de Mantenimiento de Equipos de Diálisis</div>
@@ -318,49 +318,7 @@
     </div>
   </div>
 </div>
-
 <script>
-// ============================================================
-// 🟢 CONFIGURACIÓN DE SUPABASE — sustituye estos 2 valores por los
-// de TU proyecto (Supabase → Project Settings → API →
-// "Project URL" y "anon public" key). No son secretos: la
-// seguridad real la dan las Row Level Security Policies de la tabla.
-// ============================================================
-const SUPABASE_URL = "https://fbairzjzuugekbwjcqni.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_MZk-1GXkOd6EVs-vewaUVQ_hm4lqgai";
-
-let sb = null;
-try {
-  sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-} catch (e) {
-  console.error('Supabase no se pudo inicializar. Revisa SUPABASE_URL / SUPABASE_ANON_KEY.', e);
-}
-
-window.cloudDB = {
-  async save(payloadJson) {
-    if (!sb) throw new Error('Supabase no está configurado todavía.');
-    const { error } = await sb.from('mantenimiento')
-      .update({ data: JSON.parse(payloadJson), updated_at: new Date().toISOString() })
-      .eq('id', 1);
-    if (error) throw error;
-  },
-  async load() {
-    if (!sb) throw new Error('Supabase no está configurado todavía.');
-    const { data, error } = await sb.from('mantenimiento').select('data').eq('id', 1).single();
-    if (error) throw error;
-    return data ? JSON.stringify(data.data) : null;
-  },
-  listen(callback) {
-    if (!sb) return;
-    sb.channel('mantenimiento-changes')
-      .on('postgres_changes',
-        { event: 'UPDATE', schema: 'public', table: 'mantenimiento', filter: 'id=eq.1' },
-        payload => callback(JSON.stringify(payload.new.data))
-      )
-      .subscribe();
-  }
-};
-// ============================================================
 
 const TODAY = new Date();
 TODAY.setHours(0,0,0,0);
@@ -368,8 +326,11 @@ TODAY.setHours(0,0,0,0);
 let events = [];
 let editingId = null;
 let currentTab = 'all';
-let sortCol = 'dias';
+let sortCol = 'none';
 let sortAsc = true;
+let userSorted = false;
+let nextId = 1;
+let _insertOrder = 0;
 
 const RAW = [
   ["ALCAÑIZ","Desinfección RO1","2026-07-17"],
@@ -536,17 +497,18 @@ const RAW = [
 
 function parseDateStr(s) {
   if (!s) return null;
-  const d = new Date(s);
-  if (isNaN(d)) return null;
-  d.setHours(0,0,0,0);
+  // Parse as LOCAL date (not UTC) to avoid timezone offset shifting the day
+  const parts = String(s).split('-');
+  if (parts.length !== 3) return null;
+  const d = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+  if (isNaN(d.getTime())) return null;
+  d.setHours(0, 0, 0, 0);
   return d;
 }
-
 function daysFromToday(date) {
   if (!date) return null;
   return Math.round((date - TODAY) / 86400000);
 }
-
 function getStatus(days) {
   if (days === null) return 'na';
   if (days < 0) return 'vencido';
@@ -554,25 +516,28 @@ function getStatus(days) {
   if (days <= 30) return 'proximo';
   return 'ok';
 }
-
 function statusLabel(s) {
-  return { vencido: 'Vencido', critico: 'Crítico', proximo: 'Próximo', ok: 'Al día', na: 'N/A' }[s] || s;
+  return { vencido:'Vencido', critico:'Crítico', proximo:'Próximo', ok:'Al día', na:'N/A' }[s] || s;
 }
-
 function fmtDate(d) {
   if (!d) return '—';
-  return d.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  return d.toLocaleDateString('es-ES', { day:'2-digit', month:'2-digit', year:'numeric' });
 }
-
 function toInputDate(d) {
   if (!d) return '';
-  return d.toISOString().split('T')[0];
+  // Use local date parts to avoid UTC offset shifting the day
+  const yy = d.getFullYear();
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  const dd = String(d.getDate()).padStart(2, '0');
+  return `${yy}-${mm}-${dd}`;
 }
 
-let nextId = 1;
 function loadInitialData() {
+  _insertOrder = 0;
+  nextId = 1;
   events = RAW.map(r => ({
     id: nextId++,
+    _order: _insertOrder++,
     hospital: r[0],
     tipo: r[1],
     fecha: parseDateStr(r[2]),
@@ -581,282 +546,45 @@ function loadInitialData() {
   }));
 }
 
-function buildFilters() {
-  const hospitals = [...new Set(events.map(e => e.hospital))].sort();
-  const tipos = [...new Set(events.map(e => e.tipo))].sort();
-  const fh = document.getElementById('filter-hospital');
-  const ft = document.getElementById('filter-tipo');
-  const fe = document.getElementById('filter-estado');
-  fh.innerHTML = '<option value="">Todos los hospitales</option>' + hospitals.map(h => `<option>${h}</option>`).join('');
-  ft.innerHTML = '<option value="">Todos los tipos</option>' + tipos.map(t => `<option>${t}</option>`).join('');
-  fe.innerHTML = `<option value="">Todos los estados</option><option value="vencido">Vencido</option><option value="critico">Crítico</option><option value="proximo">Próximo</option><option value="ok">Al día</option>`;
-}
-
-function filteredEvents() {
-  const h = document.getElementById('filter-hospital').value;
-  const t = document.getElementById('filter-tipo').value;
-  const e = document.getElementById('filter-estado').value;
-  const s = document.getElementById('filter-search').value.toLowerCase();
-  return events.filter(ev => {
-    const days = daysFromToday(ev.fecha);
-    const status = getStatus(days);
-    if (h && ev.hospital !== h) return false;
-    if (t && ev.tipo !== t) return false;
-    if (e && status !== e) return false;
-    if (currentTab !== 'all' && status !== currentTab) return false;
-    if (s && !(ev.hospital.toLowerCase().includes(s) || ev.tipo.toLowerCase().includes(s) || (ev.notas||'').toLowerCase().includes(s))) return false;
-    return true;
-  });
-}
-
-function sortedEvents(arr) {
-  return [...arr].sort((a, b) => {
-    let va, vb;
-    if (sortCol === 'hospital') { va = a.hospital; vb = b.hospital; }
-    else if (sortCol === 'tipo') { va = a.tipo; vb = b.tipo; }
-    else if (sortCol === 'fecha') { va = a.fecha ? a.fecha.getTime() : Infinity; vb = b.fecha ? b.fecha.getTime() : Infinity; }
-    else { va = a.fecha ? daysFromToday(a.fecha) : 99999; vb = b.fecha ? daysFromToday(b.fecha) : 99999; }
-    if (va < vb) return sortAsc ? -1 : 1;
-    if (va > vb) return sortAsc ? 1 : -1;
-    return 0;
-  });
-}
-
-function renderTable() {
-  const arr = sortedEvents(filteredEvents());
-  const tbody = document.getElementById('table-body');
-  if (arr.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:32px;color:#888">No hay eventos con los filtros actuales.</td></tr>`;
-    return;
-  }
-  tbody.innerHTML = arr.map(ev => {
-    const days = daysFromToday(ev.fecha);
-    const status = getStatus(days);
-    const daysDisp = days === null ? '—' : (days < 0 ? `${days}d` : `+${days}d`);
-    const daysCls = days === null ? '' : (days < 0 ? 'neg' : (days <= 30 ? 'warn' : 'ok'));
-    const notesHtml = ev.notas ? `<span class="notes-cell" title="${ev.notas.replace(/"/g,"&quot;")}">${ev.notas}</span>` : '<span style="color:#ccc">—</span>';
-    return `<tr>
-      <td><span class="hospital-tag">${ev.hospital}</span></td>
-      <td>${ev.tipo}</td>
-      <td class="editable" onclick="editDate(${ev.id})" title="Clic para editar fecha">
-        <span id="date-disp-${ev.id}">${fmtDate(ev.fecha)}</span>
-        <input type="date" class="inline-date" id="date-inp-${ev.id}" value="${ev.fecha ? toInputDate(ev.fecha) : ''}" style="display:none" onchange="commitDate(${ev.id})" onblur="cancelDate(${ev.id})">
-      </td>
-      <td class="days-cell ${daysCls}">${daysDisp}</td>
-      <td><span class="badge ${status}">${statusLabel(status)}</span></td>
-      <td>${notesHtml}</td>
-      <td><div class="action-row">
-        <button class="icon-btn" onclick="openEditModal(${ev.id})" title="Editar">✏</button>
-        <button class="icon-btn del" onclick="deleteEvent(${ev.id})" title="Eliminar">🗑</button>
-      </div></td>
-    </tr>`;
-  }).join('');
-}
-
-function renderKPIs() {
-  const all = events.map(e => ({ days: daysFromToday(e.fecha), status: getStatus(daysFromToday(e.fecha)) }));
-  const overdue = all.filter(e => e.status === 'vencido').length;
-  const critico = all.filter(e => e.status === 'critico').length;
-  const proximo = all.filter(e => e.status === 'proximo').length;
-  const ok = all.filter(e => e.status === 'ok').length;
-  document.getElementById('kpi-row').innerHTML = `
-    <div class="kpi total"><div class="num">${events.length}</div><div class="lbl">Total eventos</div></div>
-    <div class="kpi overdue"><div class="num">${overdue}</div><div class="lbl">⛔ Vencidos</div></div>
-    <div class="kpi critico" style="--num-color:#ba7517"><div class="num" style="color:#ba7517">${critico}</div><div class="lbl">🔴 Críticos (≤7d)</div></div>
-    <div class="kpi soon"><div class="num" style="color:#854f0b">${proximo}</div><div class="lbl">🟡 Próximos (≤30d)</div></div>
-    <div class="kpi ok"><div class="num">${ok}</div><div class="lbl">🟢 Al día</div></div>
-  `;
-}
-
-function renderAlerts() {
-  const area = document.getElementById('alert-area');
-  const overdue = events.filter(e => getStatus(daysFromToday(e.fecha)) === 'vencido');
-  const critico = events.filter(e => getStatus(daysFromToday(e.fecha)) === 'critico');
-  let html = '';
-  if (overdue.length > 0) {
-    html += `<div class="alert-banner danger"><span class="icon">⛔</span><strong>${overdue.length} evento(s) VENCIDO(S):</strong> ${overdue.slice(0,5).map(e => `${e.hospital} — ${e.tipo}`).join(' | ')}${overdue.length > 5 ? ` y ${overdue.length-5} más…` : ''}</div>`;
-  }
-  if (critico.length > 0) {
-    html += `<div class="alert-banner"><span class="icon">⚠️</span><strong>${critico.length} evento(s) CRÍTICO(S) (vencen en ≤7 días):</strong> ${critico.slice(0,4).map(e => `${e.hospital} — ${e.tipo} (${daysFromToday(e.fecha)}d)`).join(' | ')}${critico.length > 4 ? ` y ${critico.length-4} más…` : ''}</div>`;
-  }
-  area.innerHTML = html;
-}
-
-function render() {
-  renderKPIs();
-  renderAlerts();
-  renderTable();
-}
-
-function applyFilters() { renderTable(); }
-function clearFilters() {
-  document.getElementById('filter-hospital').value = '';
-  document.getElementById('filter-tipo').value = '';
-  document.getElementById('filter-estado').value = '';
-  document.getElementById('filter-search').value = '';
-  renderTable();
-}
-
-function setTab(tab, el) {
-  currentTab = tab;
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  el.classList.add('active');
-  renderTable();
-}
-
-function sortTable(col) {
-  if (sortCol === col) sortAsc = !sortAsc;
-  else { sortCol = col; sortAsc = true; }
-  renderTable();
-}
-
-function editDate(id) {
-  const ev = events.find(e => e.id === id);
-  if (!ev) return;
-  document.getElementById('date-disp-' + id).style.display = 'none';
-  document.getElementById('date-inp-' + id).style.display = 'inline-block';
-  document.getElementById('date-inp-' + id).focus();
-}
-function commitDate(id) {
-  const inp = document.getElementById('date-inp-' + id);
-  const ev = events.find(e => e.id === id);
-  if (!ev) return;
-  ev.fecha = parseDateStr(inp.value);
-  ev.fechaStr = inp.value;
-  inp.style.display = 'none';
-  render();
-}
-function cancelDate(id) {
-  const inp = document.getElementById('date-inp-' + id);
-  if (inp) inp.style.display = 'none';
-  const disp = document.getElementById('date-disp-' + id);
-  if (disp) disp.style.display = '';
-}
-
-function openAddModal() {
-  editingId = null;
-  document.getElementById('modal-title').textContent = 'Nuevo evento de mantenimiento';
-  document.getElementById('m-hospital').value = '';
-  document.getElementById('m-tipo').value = '';
-  document.getElementById('m-fecha').value = '';
-  document.getElementById('m-notas').value = '';
-  document.getElementById('modal-overlay').classList.add('open');
-}
-function openEditModal(id) {
-  const ev = events.find(e => e.id === id);
-  if (!ev) return;
-  editingId = id;
-  document.getElementById('modal-title').textContent = 'Editar evento';
-  document.getElementById('m-hospital').value = ev.hospital;
-  document.getElementById('m-tipo').value = ev.tipo;
-  document.getElementById('m-fecha').value = ev.fecha ? toInputDate(ev.fecha) : '';
-  document.getElementById('m-notas').value = ev.notas || '';
-  document.getElementById('modal-overlay').classList.add('open');
-}
-function closeModal() {
-  document.getElementById('modal-overlay').classList.remove('open');
-}
-function saveEvent() {
-  const hospital = document.getElementById('m-hospital').value.trim();
-  const tipo = document.getElementById('m-tipo').value.trim();
-  const fechaStr = document.getElementById('m-fecha').value;
-  const notas = document.getElementById('m-notas').value.trim();
-  if (!hospital || !tipo) { alert('Hospital y Tipo son obligatorios.'); return; }
-  if (editingId) {
-    const ev = events.find(e => e.id === editingId);
-    ev.hospital = hospital; ev.tipo = tipo;
-    ev.fecha = parseDateStr(fechaStr); ev.fechaStr = fechaStr; ev.notas = notas;
-  } else {
-    events.push({ id: nextId++, hospital, tipo, fecha: parseDateStr(fechaStr), fechaStr, notas });
-  }
-  closeModal();
-  buildFilters();
-  render();
-}
-function deleteEvent(id) {
-  if (!confirm('¿Eliminar este evento?')) return;
-  events = events.filter(e => e.id !== id);
-  saveToStorage();
-  render();
-}
-
-function exportCSV() {
-  const arr = sortedEvents(filteredEvents());
-  const rows = [['Hospital','Tipo de mantenimiento','Próxima fecha','Días restantes','Estado','Notas']];
-  arr.forEach(ev => {
-    const days = daysFromToday(ev.fecha);
-    rows.push([ev.hospital, ev.tipo, fmtDate(ev.fecha), days !== null ? days : '', statusLabel(getStatus(days)), ev.notas || '']);
-  });
-  const csv = rows.map(r => r.map(c => '"' + String(c).replace(/"/g, '""') + '"').join(',')).join('\n');
-  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'mantenimiento_dialisis.csv';
-  a.click();
-}
-
-let lastSavedSnapshot = '';
-
-function snapshotPayload() {
-  return JSON.stringify({ nextId, events: events.map(e => ({ ...e, fecha: e.fecha ? e.fecha.toISOString().split('T')[0] : null })) });
-}
-
-function applyRemotePayload(raw) {
-  const data = JSON.parse(raw);
-  nextId = data.nextId || 1;
-  events = (data.events || []).map(e => ({ ...e, fecha: parseDateStr(e.fecha) }));
-  lastSavedSnapshot = raw;
-}
-
-async function saveToStorage() {
+// ── Storage ──────────────────────────────────────────
+function saveToStorage() {
   try {
-    const payload = snapshotPayload();
-    lastSavedSnapshot = payload;
-    await window.cloudDB.save(payload);
-    showSaveIndicator('✓ Guardado y sincronizado');
+    const payload = JSON.stringify({
+      nextId, _insertOrder,
+      events: events.map(e => ({ ...e, fecha: e.fecha ? `${e.fecha.getFullYear()}-${String(e.fecha.getMonth()+1).padStart(2,'0')}-${String(e.fecha.getDate()).padStart(2,'0')}` : null }))
+    });
+    localStorage.setItem('dialisis-events', payload);
+    showSaveIndicator('✓ Guardado');
   } catch(err) {
-    showSaveIndicator('⚠ Error al guardar: ' + err.message, true);
+    showSaveIndicator('⚠ Error: ' + err.message, true);
   }
 }
 
-async function loadFromStorage() {
+function loadFromStorage() {
   try {
-    const raw = await window.cloudDB.load();
+    const raw = localStorage.getItem('dialisis-events');
     if (raw) {
-      const parsed = JSON.parse(raw);
-      if (parsed && Array.isArray(parsed.events) && parsed.events.length > 0) {
-        applyRemotePayload(raw);
-        return true;
-      }
+      const data = JSON.parse(raw);
+      nextId = data.nextId || 1;
+      _insertOrder = data._insertOrder || 0;
+      events = (data.events || []).map((e, i) => ({
+        ...e,
+        _order: e._order !== undefined ? e._order : i,
+        fecha: parseDateStr(e.fecha)
+      }));
+      showSaveIndicator('✓ Datos restaurados');
+      return true;
     }
-  } catch(err) {
-    // todavía no hay datos remotos u otro error de lectura
-  }
+  } catch(err) {}
   return false;
 }
 
-// Suscripción en tiempo real: Firestore empuja los cambios al instante,
-// sin necesidad de refrescar ni sondear.
-function startRealtimeSync() {
-  window.cloudDB.listen((raw) => {
-    if (!raw || raw === lastSavedSnapshot) return;
-    const editingActive = document.getElementById('modal-overlay').classList.contains('open')
-      || document.querySelectorAll('input.inline-date[style*="inline-block"]').length > 0;
-    if (editingActive) return; // se aplicará en cuanto termines de editar
-    applyRemotePayload(raw);
-    buildFilters();
-    render();
-    showSaveIndicator('🔄 Actualizado por otro usuario');
-  });
-}
-
-async function resetToDefault() {
-  if (!confirm('¿Restaurar los datos originales del Excel? Se perderán todos los cambios guardados para TODOS los usuarios.')) return;
+function resetToDefault() {
+  if (!confirm('¿Restaurar los datos originales del Excel? Se perderán todos los cambios.')) return;
+  localStorage.removeItem('dialisis-events');
   loadInitialData();
-  nextId = events.length + 1;
   buildFilters();
   render();
-  await saveToStorage();
   showSaveIndicator('✓ Datos originales restaurados');
 }
 
@@ -877,75 +605,245 @@ function showSaveIndicator(msg, warn) {
   saveTimer = setTimeout(() => { ind.style.opacity = '0'; }, 3000);
 }
 
-saveEvent = async function() {
-  const hospital = document.getElementById('m-hospital').value.trim();
-  const tipo = document.getElementById('m-tipo').value.trim();
-  const fechaStr = document.getElementById('m-fecha').value;
-  const notas = document.getElementById('m-notas').value.trim();
-  if (!hospital || !tipo) { alert('Hospital y Tipo son obligatorios.'); return; }
-  if (editingId) {
-    const ev = events.find(e => e.id === editingId);
-    ev.hospital = hospital; ev.tipo = tipo;
-    ev.fecha = parseDateStr(fechaStr); ev.fechaStr = fechaStr; ev.notas = notas;
-  } else {
-    events.push({ id: nextId++, hospital, tipo, fecha: parseDateStr(fechaStr), fechaStr, notas });
-  }
-  closeModal();
-  buildFilters();
-  render();
-  await saveToStorage();
-};
+// ── Filters & Sort ───────────────────────────────────
+function buildFilters() {
+  const hospitals = [...new Set(events.map(e => e.hospital))].sort();
+  const tipos = [...new Set(events.map(e => e.tipo))].sort();
+  const fh = document.getElementById('filter-hospital');
+  const ft = document.getElementById('filter-tipo');
+  const fe = document.getElementById('filter-estado');
+  const prevH = fh.value, prevT = ft.value;
+  fh.innerHTML = '<option value="">Todos los hospitales</option>' + hospitals.map(h => `<option>${h}</option>`).join('');
+  ft.innerHTML = '<option value="">Todos los tipos</option>' + tipos.map(t => `<option>${t}</option>`).join('');
+  fe.innerHTML = '<option value="">Todos los estados</option><option value="vencido">Vencido</option><option value="critico">Crítico</option><option value="proximo">Próximo</option><option value="ok">Al día</option>';
+  fh.value = prevH; ft.value = prevT;
+}
 
-commitDate = async function(id) {
+function filteredEvents() {
+  const h = document.getElementById('filter-hospital').value;
+  const t = document.getElementById('filter-tipo').value;
+  const e = document.getElementById('filter-estado').value;
+  const s = document.getElementById('filter-search').value.toLowerCase();
+  return events.filter(ev => {
+    const days = daysFromToday(ev.fecha);
+    const status = getStatus(days);
+    if (h && ev.hospital !== h) return false;
+    if (t && ev.tipo !== t) return false;
+    if (e && status !== e) return false;
+    if (currentTab !== 'all' && status !== currentTab) return false;
+    if (s && !(ev.hospital.toLowerCase().includes(s) || ev.tipo.toLowerCase().includes(s) || (ev.notas||'').toLowerCase().includes(s))) return false;
+    return true;
+  });
+}
+
+function sortedEvents(arr) {
+  if (!userSorted) return [...arr].sort((a, b) => (a._order||0) - (b._order||0));
+  return [...arr].sort((a, b) => {
+    let va, vb;
+    if (sortCol === 'hospital') { va = a.hospital; vb = b.hospital; }
+    else if (sortCol === 'tipo') { va = a.tipo; vb = b.tipo; }
+    else if (sortCol === 'fecha') { va = a.fecha ? a.fecha.getTime() : Infinity; vb = b.fecha ? b.fecha.getTime() : Infinity; }
+    else { va = a.fecha ? daysFromToday(a.fecha) : 99999; vb = b.fecha ? daysFromToday(b.fecha) : 99999; }
+    if (va < vb) return sortAsc ? -1 : 1;
+    if (va > vb) return sortAsc ? 1 : -1;
+    return 0;
+  });
+}
+
+function sortTable(col) {
+  userSorted = true;
+  if (sortCol === col) sortAsc = !sortAsc;
+  else { sortCol = col; sortAsc = true; }
+  renderTable();
+}
+
+// ── Render ───────────────────────────────────────────
+function renderKPIs() {
+  const all = events.map(e => getStatus(daysFromToday(e.fecha)));
+  const overdue = all.filter(s => s === 'vencido').length;
+  const critico = all.filter(s => s === 'critico').length;
+  const proximo = all.filter(s => s === 'proximo').length;
+  const ok      = all.filter(s => s === 'ok').length;
+  document.getElementById('kpi-row').innerHTML = `
+    <div class="kpi total"><div class="num">${events.length}</div><div class="lbl">Total eventos</div></div>
+    <div class="kpi overdue"><div class="num">${overdue}</div><div class="lbl">⛔ Vencidos</div></div>
+    <div class="kpi" style=""><div class="num" style="color:#ba7517">${critico}</div><div class="lbl">🔴 Críticos (≤7d)</div></div>
+    <div class="kpi soon"><div class="num" style="color:#854f0b">${proximo}</div><div class="lbl">🟡 Próximos (≤30d)</div></div>
+    <div class="kpi ok"><div class="num">${ok}</div><div class="lbl">🟢 Al día</div></div>`;
+}
+
+function renderAlerts() {
+  const area = document.getElementById('alert-area');
+  const overdue = events.filter(e => getStatus(daysFromToday(e.fecha)) === 'vencido');
+  const critico = events.filter(e => getStatus(daysFromToday(e.fecha)) === 'critico');
+  let html = '';
+  if (overdue.length)
+    html += `<div class="alert-banner danger"><span class="icon">⛔</span><strong>${overdue.length} evento(s) VENCIDO(S):</strong> ${overdue.slice(0,5).map(e=>`${e.hospital} — ${e.tipo}`).join(' | ')}${overdue.length>5?` y ${overdue.length-5} más…`:''}</div>`;
+  if (critico.length)
+    html += `<div class="alert-banner"><span class="icon">⚠️</span><strong>${critico.length} evento(s) CRÍTICO(S) (≤7 días):</strong> ${critico.slice(0,4).map(e=>`${e.hospital} — ${e.tipo} (${daysFromToday(e.fecha)}d)`).join(' | ')}${critico.length>4?` y ${critico.length-4} más…`:''}</div>`;
+  area.innerHTML = html;
+}
+
+function renderTable() {
+  const arr = sortedEvents(filteredEvents());
+  const tbody = document.getElementById('table-body');
+  if (!arr.length) {
+    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:32px;color:#888">No hay eventos con los filtros actuales.</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = arr.map(ev => {
+    const days = daysFromToday(ev.fecha);
+    const status = getStatus(days);
+    const daysDisp = days === null ? '—' : (days < 0 ? `${days}d` : `+${days}d`);
+    const daysCls  = days === null ? '' : (days < 0 ? 'neg' : (days <= 30 ? 'warn' : 'ok'));
+    const notesHtml = ev.notas
+      ? `<span class="notes-cell" title="${ev.notas.replace(/"/g,'&quot;')}">${ev.notas}</span>`
+      : '<span style="color:#ccc">—</span>';
+    return `<tr>
+      <td><span class="hospital-tag">${ev.hospital}</span></td>
+      <td>${ev.tipo}</td>
+      <td class="editable" onclick="editDate(${ev.id})" title="Clic para editar fecha">
+        <span id="date-disp-${ev.id}">${fmtDate(ev.fecha)}</span>
+        <input type="date" class="inline-date" id="date-inp-${ev.id}" value="${ev.fecha ? toInputDate(ev.fecha) : ''}" style="display:none" onchange="commitDate(${ev.id})" onblur="cancelDate(${ev.id})">
+      </td>
+      <td class="days-cell ${daysCls}">${daysDisp}</td>
+      <td><span class="badge ${status}">${statusLabel(status)}</span></td>
+      <td>${notesHtml}</td>
+      <td><div class="action-row">
+        <button class="icon-btn" onclick="openEditModal(${ev.id})" title="Editar">✏</button>
+        <button class="icon-btn del" onclick="deleteEvent(${ev.id})" title="Eliminar">🗑</button>
+      </div></td>
+    </tr>`;
+  }).join('');
+}
+
+function render() { renderKPIs(); renderAlerts(); renderTable(); }
+function applyFilters() { renderTable(); }
+function clearFilters() {
+  document.getElementById('filter-hospital').value = '';
+  document.getElementById('filter-tipo').value = '';
+  document.getElementById('filter-estado').value = '';
+  document.getElementById('filter-search').value = '';
+  renderTable();
+}
+function setTab(tab, el) {
+  currentTab = tab;
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  renderTable();
+}
+
+// ── Inline date edit ─────────────────────────────────
+function editDate(id) {
+  document.getElementById('date-disp-' + id).style.display = 'none';
+  document.getElementById('date-inp-' + id).style.display = 'inline-block';
+  document.getElementById('date-inp-' + id).focus();
+}
+function commitDate(id) {
   const inp = document.getElementById('date-inp-' + id);
+  const ev  = events.find(e => e.id === id);
+  if (!ev) return;
+  ev.fecha    = parseDateStr(inp.value);
+  ev.fechaStr = inp.value;
+  saveToStorage();
+  render();
+}
+function cancelDate(id) {
+  const inp  = document.getElementById('date-inp-' + id);
+  const disp = document.getElementById('date-disp-' + id);
+  if (inp)  inp.style.display  = 'none';
+  if (disp) disp.style.display = '';
+}
+
+// ── Modal ────────────────────────────────────────────
+function openAddModal() {
+  editingId = null;
+  document.getElementById('modal-title').textContent = 'Nuevo evento de mantenimiento';
+  document.getElementById('m-hospital').value = '';
+  document.getElementById('m-tipo').value = '';
+  document.getElementById('m-fecha').value = '';
+  document.getElementById('m-notas').value = '';
+  document.getElementById('modal-overlay').classList.add('open');
+}
+function openEditModal(id) {
   const ev = events.find(e => e.id === id);
   if (!ev) return;
-  ev.fecha = parseDateStr(inp.value);
-  ev.fechaStr = inp.value;
-  inp.style.display = 'none';
+  editingId = id;
+  document.getElementById('modal-title').textContent = 'Editar evento';
+  document.getElementById('m-hospital').value = ev.hospital;
+  document.getElementById('m-tipo').value     = ev.tipo;
+  document.getElementById('m-fecha').value    = ev.fecha ? toInputDate(ev.fecha) : '';
+  document.getElementById('m-notas').value    = ev.notas || '';
+  document.getElementById('modal-overlay').classList.add('open');
+}
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('open');
+}
+function saveEvent() {
+  const hospital  = document.getElementById('m-hospital').value.trim();
+  const tipo      = document.getElementById('m-tipo').value.trim();
+  const fechaStr  = document.getElementById('m-fecha').value;
+  const notas     = document.getElementById('m-notas').value.trim();
+  if (!hospital || !tipo) { alert('Hospital y Tipo son obligatorios.'); return; }
+  if (editingId !== null) {
+    // Edit in place — find by id and update WITHOUT changing _order
+    const ev = events.find(e => e.id === editingId);
+    ev.hospital = hospital;
+    ev.tipo     = tipo;
+    ev.fecha    = parseDateStr(fechaStr);
+    ev.fechaStr = fechaStr;
+    ev.notas    = notas;
+  } else {
+    events.push({ id: nextId++, _order: _insertOrder++, hospital, tipo, fecha: parseDateStr(fechaStr), fechaStr, notas });
+    buildFilters();
+  }
+  closeModal();
+  saveToStorage();
   render();
-  await saveToStorage();
-};
-
-deleteEvent = async function(id) {
-  if (!confirm('¿Eliminar este evento? Se eliminará para todos los usuarios.')) return;
+}
+function deleteEvent(id) {
+  if (!confirm('¿Eliminar este evento?')) return;
   events = events.filter(e => e.id !== id);
+  saveToStorage();
   render();
-  await saveToStorage();
-};
+}
 
-document.getElementById('today-display').textContent = 'Hoy: ' + TODAY.toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+// ── Export ───────────────────────────────────────────
+function exportCSV() {
+  const arr  = sortedEvents(filteredEvents());
+  const rows = [['Hospital','Tipo de mantenimiento','Próxima fecha','Días restantes','Estado','Notas']];
+  arr.forEach(ev => {
+    const days = daysFromToday(ev.fecha);
+    rows.push([ev.hospital, ev.tipo, fmtDate(ev.fecha), days !== null ? days : '', statusLabel(getStatus(days)), ev.notas||'']);
+  });
+  const csv  = rows.map(r => r.map(c => '"' + String(c).replace(/"/g,'""') + '"').join(',')).join('\n');
+  const blob = new Blob(['\uFEFF' + csv], { type:'text/csv;charset=utf-8;' });
+  const a    = document.createElement('a');
+  a.href     = URL.createObjectURL(blob);
+  a.download = 'mantenimiento_dialisis.csv';
+  a.click();
+}
+
+// ── Boot ─────────────────────────────────────────────
+document.getElementById('today-display').textContent =
+  'Hoy: ' + TODAY.toLocaleDateString('es-ES', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
 
 document.getElementById('modal-overlay').addEventListener('click', function(e) {
   if (e.target === this) closeModal();
 });
 
+// Add reset button
 const resetBtn = document.createElement('button');
 resetBtn.className = 'btn-secondary';
 resetBtn.textContent = '↺ Restaurar original';
 resetBtn.onclick = resetToDefault;
 document.querySelector('.export-row').appendChild(resetBtn);
 
-(async function init() {
-  showSaveIndicator('⏳ Cargando datos compartidos…');
-  try {
-    const restored = await loadFromStorage();
-    if (!restored) {
-      loadInitialData();
-      lastSavedSnapshot = '';
-      await saveToStorage();
-    }
-    buildFilters();
-    render();
-    showSaveIndicator(restored ? '✓ Datos sincronizados cargados' : '✓ Datos iniciales publicados');
-    startRealtimeSync();
-  } catch (err) {
-    loadInitialData();
-    buildFilters();
-    render();
-    showSaveIndicator('⚠ Sin conexión a Supabase — configura SUPABASE_URL / SUPABASE_ANON_KEY arriba en el código. Trabajando solo en local.', true);
-  }
-})();
+const restored = loadFromStorage();
+if (!restored) loadInitialData();
+buildFilters();
+render();
+
 </script>
 </body>
 </html>
