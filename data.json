@@ -291,15 +291,6 @@
       "notas": ""
     },
     {
-      "id": 50,
-      "_order": 49,
-      "hospital": "Soria",
-      "tipo": "CTS Pretratamiento",
-      "fecha": "2026-10-29",
-      "fechaStr": "2026-10-29",
-      "notas": ""
-    },
-    {
       "id": 51,
       "_order": 50,
       "hospital": "ALCAÑIZ",
