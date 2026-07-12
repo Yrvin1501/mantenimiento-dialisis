@@ -570,15 +570,6 @@
       "notas": ""
     },
     {
-      "id": 69,
-      "_order": 68,
-      "hospital": "DIALBILBO",
-      "tipo": "CTS CDS08 1",
-      "fecha": "2027-05-18",
-      "fechaStr": "2027-05-18",
-      "notas": ""
-    },
-    {
       "id": 70,
       "_order": 69,
       "hospital": "Policlinica",
