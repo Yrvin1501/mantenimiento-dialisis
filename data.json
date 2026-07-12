@@ -565,8 +565,8 @@
       "_order": 103,
       "hospital": "INOCENCIO",
       "tipo": "Membranas",
-      "fecha": "2025-12-12",
-      "fechaStr": "2025-12-12",
+      "fecha": null,
+      "fechaStr": "",
       "notas": "Vencida - revisar"
     },
     {
