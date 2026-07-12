@@ -372,15 +372,6 @@
       "notas": ""
     },
     {
-      "id": 62,
-      "_order": 61,
-      "hospital": "Txagorritxu",
-      "tipo": "CTS Osmosis 1",
-      "fecha": "2027-01-01",
-      "fechaStr": "2027-01-01",
-      "notas": ""
-    },
-    {
       "id": 64,
       "_order": 63,
       "hospital": "Soria",
