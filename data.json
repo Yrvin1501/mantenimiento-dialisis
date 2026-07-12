@@ -237,15 +237,6 @@
       "notas": ""
     },
     {
-      "id": 37,
-      "_order": 36,
-      "hospital": "Logroño",
-      "tipo": "Cambio Carbón 2",
-      "fecha": "2026-03-05",
-      "fechaStr": "2026-03-05",
-      "notas": ""
-    },
-    {
       "id": 38,
       "_order": 37,
       "hospital": "ALCAÑIZ",
