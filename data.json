@@ -390,15 +390,6 @@
       "notas": ""
     },
     {
-      "id": 67,
-      "_order": 66,
-      "hospital": "Txagorritxu",
-      "tipo": "CTS Osmosis 2",
-      "fecha": "2027-01-01",
-      "fechaStr": "2027-01-01",
-      "notas": ""
-    },
-    {
       "id": 68,
       "_order": 67,
       "hospital": "H. HUESCA",
