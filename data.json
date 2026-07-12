@@ -547,8 +547,8 @@
       "_order": 101,
       "hospital": "MIGUEL SERVET 6ª",
       "tipo": "Membranas",
-      "fecha": "2025-12-03",
-      "fechaStr": "2025-12-03",
+      "fecha": null,
+      "fechaStr": "",
       "notas": "Vencida - revisar"
     },
     {
