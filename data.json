@@ -363,15 +363,6 @@
       "notas": ""
     },
     {
-      "id": 64,
-      "_order": 63,
-      "hospital": "Soria",
-      "tipo": "CTS Osmosis 1",
-      "fecha": "2026-10-29",
-      "fechaStr": "2026-10-29",
-      "notas": ""
-    },
-    {
       "id": 65,
       "_order": 64,
       "hospital": "Barbastro",
