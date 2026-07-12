@@ -337,8 +337,6 @@
   </div>
 </div>
 <script>
-
-
 const TODAY = new Date();
 TODAY.setHours(0,0,0,0);
 
@@ -350,6 +348,10 @@ let sortAsc = true;
 let userSorted = false;
 let nextId = 1;
 let _insertOrder = 0;
+
+const GH_REPO   = 'yrvin1501/mantenimiento-dialisis';
+const GH_FILE   = 'data.json';
+const GH_BRANCH = 'main';
 
 const RAW = [
   ["ALCAÑIZ","Desinfección RO1","2026-07-17"],
@@ -512,7 +514,7 @@ const RAW = [
   ["Santiago (AquaC 2CHS6121)","CTS","2025-03-01","Fecha pasada - revisar"],
   ["Santiago (AquaC 2CHS6121)","Filtros","2023-10-25","Vencida - revisar"],
   ["Santiago (AquaC 2CHS6121)","Carbón","2023-10-25","Vencida - revisar"],
-];
+]
 
 function parseDateStr(s) {
   if (!s) return null;
@@ -524,10 +526,12 @@ function parseDateStr(s) {
   d.setHours(0, 0, 0, 0);
   return d;
 }
+
 function daysFromToday(date) {
   if (!date) return null;
   return Math.round((date - TODAY) / 86400000);
 }
+
 function getStatus(days) {
   if (days === null) return 'na';
   if (days < 0) return 'vencido';
@@ -535,13 +539,16 @@ function getStatus(days) {
   if (days <= 30) return 'proximo';
   return 'ok';
 }
+
 function statusLabel(s) {
   return { vencido:'Vencido', critico:'Crítico', proximo:'Próximo', ok:'Al día', na:'N/A' }[s] || s;
 }
+
 function fmtDate(d) {
   if (!d) return '—';
   return d.toLocaleDateString('es-ES', { day:'2-digit', month:'2-digit', year:'numeric' });
 }
+
 function toInputDate(d) {
   if (!d) return '';
   // Use local date parts to avoid UTC offset shifting the day
@@ -564,14 +571,6 @@ function loadInitialData() {
     notas: r[3] || ''
   }));
 }
-
-// ── Config ───────────────────────────────────────────
-const GH_REPO  = 'yrvin1501/mantenimiento-dialisis';
-const GH_FILE  = 'data.json';
-const GH_BRANCH = 'main';
-let GH_TOKEN = localStorage.getItem('gh_token') || '';
-
-function getToken() { return localStorage.getItem('gh_token') || ''; }
 
 function serializeEvents() {
   return JSON.stringify({
@@ -598,9 +597,6 @@ function deserializeEvents(raw) {
     fecha: parseDateStr(e.fecha)
   }));
 }
-
-// ── GitHub Sync ───────────────────────────────────────
-let _ghSha = null;
 
 async function ghGet() {
   const token = getToken();
@@ -682,68 +678,6 @@ function resetToDefault() {
   showSaveIndicator('✓ Datos originales restaurados');
 }
 
-// ── Token config UI ───────────────────────────────────
-function openTokenModal() {
-  const cur = getToken();
-  document.getElementById('token-input').value = cur ? cur.slice(0,8) + '…' : '';
-  document.getElementById('token-modal').classList.add('open');
-}
-function closeTokenModal() {
-  document.getElementById('token-modal').classList.remove('open');
-}
-async function saveToken() {
-  const v = document.getElementById('token-input').value.trim();
-  if (v && !v.includes('…')) {
-    localStorage.setItem('gh_token', v);
-    closeTokenModal();
-    showSaveIndicator('⏳ Conectando con GitHub…');
-    // Try to load remote first; if empty, push local data
-    const remote = await ghGet();
-    if (remote && remote.trim() !== '{}' && remote.trim() !== '') {
-      try {
-        deserializeEvents(remote);
-        localStorage.setItem('dialisis-events', remote);
-        buildFilters();
-        render();
-        showSaveIndicator('✓ Datos cargados desde GitHub');
-        return;
-      } catch(e) {}
-    }
-    // No remote data — push current data up
-    await saveToStorage();
-    showSaveIndicator('✓ Token guardado y datos sincronizados');
-    buildFilters();
-    render();
-  } else {
-    closeTokenModal();
-  }
-}
-function clearToken() {
-  localStorage.removeItem('gh_token');
-  closeTokenModal();
-  showSaveIndicator('Token eliminado — modo local');
-}
-
-function showSyncBanner() {
-  if (document.getElementById('sync-banner')) return;
-  const b = document.createElement('div');
-  b.id = 'sync-banner';
-  b.style.cssText = 'background:#1a3a5c;color:#fff;padding:10px 20px;font-size:13px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;';
-  const span = document.createElement('span');
-  span.innerHTML = '🔗 <strong>Sin sincronización activa.</strong> Configura tu token de GitHub para sincronizar entre dispositivos.';
-  const btnConfig = document.createElement('button');
-  btnConfig.textContent = '⚙️ Configurar ahora';
-  btnConfig.style.cssText = 'background:#fff;color:#1a3a5c;border:none;border-radius:5px;padding:5px 12px;font-size:12px;font-weight:600;cursor:pointer';
-  btnConfig.onclick = function() { b.remove(); openTokenModal(); };
-  const btnClose = document.createElement('button');
-  btnClose.textContent = '✕';
-  btnClose.style.cssText = 'background:transparent;color:rgba(255,255,255,0.6);border:none;font-size:18px;cursor:pointer;margin-left:auto';
-  btnClose.onclick = function() { b.remove(); };
-  b.appendChild(span);
-  b.appendChild(btnConfig);
-  b.appendChild(btnClose);
-  document.querySelector('header').insertAdjacentElement('afterend', b);
-}
 function showSaveIndicator(msg, warn) {
   let ind = document.getElementById('save-ind');
   if (!ind) {
@@ -760,7 +694,6 @@ function showSaveIndicator(msg, warn) {
   saveTimer = setTimeout(() => { ind.style.opacity = '0'; }, 3000);
 }
 
-// ── Filters & Sort ───────────────────────────────────
 function buildFilters() {
   const hospitals = [...new Set(events.map(e => e.hospital))].sort();
   const tipos = [...new Set(events.map(e => e.tipo))].sort();
@@ -812,7 +745,6 @@ function sortTable(col) {
   renderTable();
 }
 
-// ── Render ───────────────────────────────────────────
 function renderKPIs() {
   const all = events.map(e => getStatus(daysFromToday(e.fecha)));
   const overdue = all.filter(s => s === 'vencido').length;
@@ -873,7 +805,9 @@ function renderTable() {
 }
 
 function render() { renderKPIs(); renderAlerts(); renderTable(); }
+
 function applyFilters() { renderTable(); }
+
 function clearFilters() {
   document.getElementById('filter-hospital').value = '';
   document.getElementById('filter-tipo').value = '';
@@ -881,6 +815,7 @@ function clearFilters() {
   document.getElementById('filter-search').value = '';
   renderTable();
 }
+
 function setTab(tab, el) {
   currentTab = tab;
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -888,12 +823,12 @@ function setTab(tab, el) {
   renderTable();
 }
 
-// ── Inline date edit ─────────────────────────────────
 function editDate(id) {
   document.getElementById('date-disp-' + id).style.display = 'none';
   document.getElementById('date-inp-' + id).style.display = 'inline-block';
   document.getElementById('date-inp-' + id).focus();
 }
+
 function commitDate(id) {
   const inp = document.getElementById('date-inp-' + id);
   const ev  = events.find(e => e.id === id);
@@ -903,6 +838,7 @@ function commitDate(id) {
   saveToStorage();
   render();
 }
+
 function cancelDate(id) {
   const inp  = document.getElementById('date-inp-' + id);
   const disp = document.getElementById('date-disp-' + id);
@@ -910,7 +846,6 @@ function cancelDate(id) {
   if (disp) disp.style.display = '';
 }
 
-// ── Modal ────────────────────────────────────────────
 function openAddModal() {
   editingId = null;
   document.getElementById('modal-title').textContent = 'Nuevo evento de mantenimiento';
@@ -920,6 +855,7 @@ function openAddModal() {
   document.getElementById('m-notas').value = '';
   document.getElementById('modal-overlay').classList.add('open');
 }
+
 function openEditModal(id) {
   const ev = events.find(e => e.id === id);
   if (!ev) return;
@@ -931,9 +867,11 @@ function openEditModal(id) {
   document.getElementById('m-notas').value    = ev.notas || '';
   document.getElementById('modal-overlay').classList.add('open');
 }
+
 function closeModal() {
   document.getElementById('modal-overlay').classList.remove('open');
 }
+
 function saveEvent() {
   const hospital  = document.getElementById('m-hospital').value.trim();
   const tipo      = document.getElementById('m-tipo').value.trim();
@@ -956,6 +894,7 @@ function saveEvent() {
   saveToStorage();
   render();
 }
+
 function deleteEvent(id) {
   if (!confirm('¿Eliminar este evento?')) return;
   events = events.filter(e => e.id !== id);
@@ -963,7 +902,6 @@ function deleteEvent(id) {
   render();
 }
 
-// ── Export ───────────────────────────────────────────
 function exportCSV() {
   const arr  = sortedEvents(filteredEvents());
   const rows = [['Hospital','Tipo de mantenimiento','Próxima fecha','Días restantes','Estado','Notas']];
@@ -979,20 +917,70 @@ function exportCSV() {
   a.click();
 }
 
-// ── Boot ─────────────────────────────────────────────
-document.getElementById('today-display').textContent =
-  'Hoy: ' + TODAY.toLocaleDateString('es-ES', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+function openTokenModal() {
+  const cur = getToken();
+  document.getElementById('token-input').value = cur ? cur.slice(0,8) + '…' : '';
+  document.getElementById('token-modal').classList.add('open');
+}
 
-document.getElementById('modal-overlay').addEventListener('click', function(e) {
-  if (e.target === this) closeModal();
-});
+function closeTokenModal() {
+  document.getElementById('token-modal').classList.remove('open');
+}
 
-// Add reset button
-const resetBtn = document.createElement('button');
-resetBtn.className = 'btn-secondary';
-resetBtn.textContent = '↺ Restaurar original';
-resetBtn.onclick = resetToDefault;
-document.querySelector('.export-row').appendChild(resetBtn);
+async function saveToken() {
+  const v = document.getElementById('token-input').value.trim();
+  if (v && !v.includes('…')) {
+    localStorage.setItem('gh_token', v);
+    closeTokenModal();
+    showSaveIndicator('⏳ Conectando con GitHub…');
+    // Try to load remote first; if empty, push local data
+    const remote = await ghGet();
+    if (remote && remote.trim() !== '{}' && remote.trim() !== '') {
+      try {
+        deserializeEvents(remote);
+        localStorage.setItem('dialisis-events', remote);
+        buildFilters();
+        render();
+        showSaveIndicator('✓ Datos cargados desde GitHub');
+        return;
+      } catch(e) {}
+    }
+    // No remote data — push current data up
+    await saveToStorage();
+    showSaveIndicator('✓ Token guardado y datos sincronizados');
+    buildFilters();
+    render();
+  } else {
+    closeTokenModal();
+  }
+}
+
+function clearToken() {
+  localStorage.removeItem('gh_token');
+  closeTokenModal();
+  showSaveIndicator('Token eliminado — modo local');
+}
+
+function showSyncBanner() {
+  if (document.getElementById('sync-banner')) return;
+  const b = document.createElement('div');
+  b.id = 'sync-banner';
+  b.style.cssText = 'background:#1a3a5c;color:#fff;padding:10px 20px;font-size:13px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;';
+  const span = document.createElement('span');
+  span.innerHTML = '🔗 <strong>Sin sincronización activa.</strong> Configura tu token de GitHub para sincronizar entre dispositivos.';
+  const btnConfig = document.createElement('button');
+  btnConfig.textContent = '⚙️ Configurar ahora';
+  btnConfig.style.cssText = 'background:#fff;color:#1a3a5c;border:none;border-radius:5px;padding:5px 12px;font-size:12px;font-weight:600;cursor:pointer';
+  btnConfig.onclick = function() { b.remove(); openTokenModal(); };
+  const btnClose = document.createElement('button');
+  btnClose.textContent = '✕';
+  btnClose.style.cssText = 'background:transparent;color:rgba(255,255,255,0.6);border:none;font-size:18px;cursor:pointer;margin-left:auto';
+  btnClose.onclick = function() { b.remove(); };
+  b.appendChild(span);
+  b.appendChild(btnConfig);
+  b.appendChild(btnClose);
+  document.querySelector('header').insertAdjacentElement('afterend', b);
+}
 
 window.onerror = function(msg, src, line, col, err) {
   document.body.insertAdjacentHTML('afterbegin',
@@ -1028,6 +1016,7 @@ window.onerror = function(msg, src, line, col, err) {
     try { loadInitialData(); buildFilters(); render(); } catch(e2) {}
   }
 })();
+
 
 
 </script>
