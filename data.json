@@ -1254,15 +1254,6 @@
       "notas": "Vencida - revisar"
     },
     {
-      "id": 158,
-      "_order": 157,
-      "hospital": "Santiago (AquaC 2CHS6121)",
-      "tipo": "CTS",
-      "fecha": "2025-03-01",
-      "fechaStr": "2025-03-01",
-      "notas": "Fecha pasada - revisar"
-    },
-    {
       "id": 159,
       "_order": 158,
       "hospital": "Santiago (AquaC 2CHS6121)",
