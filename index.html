@@ -646,25 +646,20 @@ async function saveToStorage() {
 }
 
 async function loadFromStorage() {
-  // 1. Try public data.json (no token needed — works on all devices)
-  try {
-    showSaveIndicator('⏳ Cargando datos…');
-    const r = await fetch(
-      `https://raw.githubusercontent.com/${GH_REPO}/${GH_BRANCH}/${GH_FILE}?t=${Date.now()}`,
-      { cache: 'no-store' }
-    );
-    if (r.ok) {
-      const text = await r.text();
-      deserializeEvents(text);
-      localStorage.setItem('dialisis-events', text);
-      // Get SHA for future writes (needs token)
-      const token = getToken();
-      if (token) ghGet().then(() => {}); // warm up SHA
-      showSaveIndicator('✓ Datos actualizados');
-      return true;
+  // 1. Try GitHub API with token (authenticated = no CORS issues)
+  const token = getToken();
+  if (token) {
+    showSaveIndicator('⏳ Sincronizando…');
+    const remote = await ghGet();
+    if (remote) {
+      try {
+        deserializeEvents(remote);
+        localStorage.setItem('dialisis-events', remote);
+        showSaveIndicator('✓ Sincronizado con GitHub');
+        return true;
+      } catch(e) {}
     }
-  } catch(e) {}
-
+  }
   // 2. Fallback: localStorage
   const raw = localStorage.getItem('dialisis-events');
   if (raw) {
@@ -994,19 +989,22 @@ resetBtn.onclick = resetToDefault;
 document.querySelector('.export-row').appendChild(resetBtn);
 
 (async () => {
-  // Always load initial data first so table is never empty
+  // Step 1: Always show initial Excel data immediately (never blank)
   loadInitialData();
   buildFilters();
   render();
-  // Then try to load from GitHub or localStorage (overwrites if data found)
+
+  // Step 2: Try to load saved data (GitHub API or localStorage)
   const restored = await loadFromStorage();
   if (restored) {
     buildFilters();
     render();
-  } else if (getToken()) {
-    // Token present but no remote data — push initial data up
-    await saveToStorage();
+  } else {
+    // No saved data anywhere — if token present, push initial data to GitHub
+    if (getToken()) await saveToStorage();
   }
+
+  // Step 3: Show sync banner if no token
   if (!getToken()) showSyncBanner();
 })();
 
