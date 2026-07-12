@@ -1,341 +1,3 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard Mantenimiento — Control de Vencimientos</title>
-<style>
-
-
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: Arial, sans-serif; background: #f4f6fa; color: #222; font-size: 14px; }
-
-  header {
-    background: #1a3a5c;
-    color: #fff;
-    padding: 16px 24px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-  }
-  header h1 { font-size: 18px; font-weight: 600; letter-spacing: 0.3px; }
-  header .subtitle { font-size: 12px; opacity: 0.75; margin-top: 2px; }
-  #today-display { font-size: 12px; opacity: 0.8; white-space: nowrap; }
-
-  .top-bar {
-    background: #fff;
-    border-bottom: 1px solid #dde2ea;
-    padding: 12px 24px;
-    display: flex;
-    gap: 12px;
-    align-items: center;
-    flex-wrap: wrap;
-  }
-  .top-bar label { font-size: 12px; color: #555; }
-  .top-bar select, .top-bar input {
-    border: 1px solid #c8cfd9;
-    border-radius: 6px;
-    padding: 6px 10px;
-    font-size: 13px;
-    background: #fff;
-    color: #222;
-  }
-  .top-bar button {
-    padding: 6px 14px;
-    border-radius: 6px;
-    border: none;
-    cursor: pointer;
-    font-size: 13px;
-    font-weight: 500;
-  }
-  .btn-primary { background: #1a3a5c; color: #fff; }
-  .btn-primary:hover { background: #154875; }
-  .btn-success { background: #1d9e75; color: #fff; }
-  .btn-success:hover { background: #158a63; }
-  .btn-danger { background: #e24b4a; color: #fff; }
-  .btn-danger:hover { background: #c43a39; }
-  .btn-secondary { background: #f1f3f7; color: #333; border: 1px solid #c8cfd9; }
-  .btn-secondary:hover { background: #e4e8ef; }
-
-  .kpi-row {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    gap: 12px;
-    padding: 16px 24px 0;
-  }
-  .kpi {
-    background: #fff;
-    border-radius: 10px;
-    border: 1px solid #dde2ea;
-    padding: 14px 16px;
-    text-align: center;
-  }
-  .kpi .num { font-size: 28px; font-weight: 700; line-height: 1; }
-  .kpi .lbl { font-size: 11px; color: #666; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
-  .kpi.overdue .num { color: #e24b4a; }
-  .kpi.soon .num { color: #ba7517; }
-  .kpi.ok .num { color: #1d9e75; }
-  .kpi.total .num { color: #1a3a5c; }
-
-  .section { padding: 16px 24px; }
-  .section h2 { font-size: 14px; font-weight: 600; color: #1a3a5c; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
-
-  .alert-banner {
-    background: #fef3e2;
-    border: 1px solid #f5c060;
-    border-radius: 8px;
-    padding: 10px 16px;
-    margin: 12px 24px 0;
-    font-size: 13px;
-    color: #7a4e00;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .alert-banner.danger { background: #fdeaea; border-color: #f09595; color: #6b1c1c; }
-  .alert-banner .icon { font-size: 18px; }
-
-  .table-wrap { overflow-x: auto; border-radius: 10px; border: 1px solid #dde2ea; }
-  table { width: 100%; border-collapse: collapse; background: #fff; font-size: 13px; min-width: 800px; }
-  thead tr { background: #1a3a5c; color: #fff; }
-  thead th { padding: 10px 12px; text-align: left; font-weight: 500; font-size: 12px; letter-spacing: 0.3px; white-space: nowrap; }
-  tbody tr { border-bottom: 1px solid #edf0f5; transition: background 0.15s; }
-  tbody tr:hover { background: #f7f9fc; }
-  tbody td { padding: 9px 12px; vertical-align: middle; }
-  tbody td.editable { cursor: pointer; }
-  tbody td.editable:hover { background: #eef4ff; }
-  input[type="date"].inline-date {
-    border: 1px solid #c8cfd9;
-    border-radius: 5px;
-    padding: 3px 6px;
-    font-size: 12px;
-    background: #fff;
-    color: #222;
-    width: 130px;
-  }
-
-  .badge {
-    display: inline-block;
-    padding: 3px 9px;
-    border-radius: 20px;
-    font-size: 11px;
-    font-weight: 600;
-    white-space: nowrap;
-  }
-  .badge.vencido { background: #fdeaea; color: #a32d2d; border: 1px solid #f09595; }
-  .badge.critico { background: #fef3e2; color: #7a4e00; border: 1px solid #fac775; }
-  .badge.proximo { background: #fff8e1; color: #854f0b; border: 1px solid #ef9f27; }
-  .badge.ok { background: #eaf3de; color: #3b6d11; border: 1px solid #97c459; }
-  .badge.na { background: #f1efe8; color: #5f5e5a; border: 1px solid #d3d1c7; }
-
-  .days-cell { font-weight: 600; }
-  .days-cell.neg { color: #e24b4a; }
-  .days-cell.warn { color: #ba7517; }
-  .days-cell.ok { color: #3b6d11; }
-
-  .hospital-tag {
-    background: #e6f1fb;
-    color: #185fa5;
-    border-radius: 5px;
-    padding: 2px 7px;
-    font-size: 11px;
-    font-weight: 500;
-  }
-
-  .action-row {
-    display: flex;
-    gap: 6px;
-    align-items: center;
-  }
-  .icon-btn {
-    background: none;
-    border: 1px solid #c8cfd9;
-    border-radius: 5px;
-    cursor: pointer;
-    padding: 4px 7px;
-    font-size: 13px;
-    color: #444;
-    line-height: 1;
-  }
-  .icon-btn:hover { background: #eef4ff; border-color: #378add; color: #185fa5; }
-  .icon-btn.del:hover { background: #fdeaea; border-color: #f09595; color: #a32d2d; }
-
-  .tabs {
-    display: flex;
-    gap: 4px;
-    padding: 0 24px;
-    border-bottom: 2px solid #dde2ea;
-    margin-top: 12px;
-  }
-  .tab {
-    padding: 9px 16px;
-    cursor: pointer;
-    font-size: 13px;
-    font-weight: 500;
-    color: #555;
-    border-bottom: 2px solid transparent;
-    margin-bottom: -2px;
-    border-radius: 6px 6px 0 0;
-    transition: all 0.15s;
-  }
-  .tab:hover { background: #f4f6fa; color: #1a3a5c; }
-  .tab.active { color: #1a3a5c; border-bottom-color: #1a3a5c; background: #fff; }
-
-  .modal-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.45);
-    z-index: 1000;
-    align-items: center;
-    justify-content: center;
-  }
-  .modal-overlay.open { display: flex; }
-  .modal {
-    background: #fff;
-    border-radius: 12px;
-    padding: 24px;
-    width: 440px;
-    max-width: 95vw;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.18);
-  }
-  .modal h3 { font-size: 15px; font-weight: 600; color: #1a3a5c; margin-bottom: 16px; }
-  .modal label { display: block; font-size: 12px; color: #555; margin-bottom: 4px; margin-top: 12px; }
-  .modal input, .modal select, .modal textarea {
-    width: 100%;
-    border: 1px solid #c8cfd9;
-    border-radius: 7px;
-    padding: 8px 10px;
-    font-size: 13px;
-    color: #222;
-    background: #fff;
-  }
-  .modal textarea { resize: vertical; min-height: 60px; }
-  .modal .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 20px; }
-
-  .legend {
-    display: flex;
-    gap: 16px;
-    flex-wrap: wrap;
-    padding: 8px 24px;
-    font-size: 11px;
-    color: #555;
-    align-items: center;
-  }
-  .legend-item { display: flex; align-items: center; gap: 5px; }
-
-  .export-row { display: flex; gap: 8px; padding: 12px 24px 0; flex-wrap: wrap; }
-
-  .notes-cell { max-width: 180px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #666; font-size: 12px; cursor: help; }
-
-  @media print {
-    header, .top-bar, .export-row, .tabs, .action-row, .modal-overlay { display: none !important; }
-    .section { padding: 8px 0; }
-    .kpi-row { padding: 0; }
-    body { background: #fff; }
-    table { font-size: 11px; }
-  }
-
-
-</style>
-</head>
-<body>
-<header>
-  <div>
-    <div class="subtitle">Sistema de Mantenimiento de Equipos de Diálisis</div>
-    <h1>Dashboard — Control de Vencimientos</h1>
-  </div>
-  <div id="today-display"></div>
-</header>
-
-<div id="alert-area"></div>
-
-<div class="kpi-row" id="kpi-row"></div>
-
-<div class="export-row">
-  <button class="btn-success" onclick="exportCSV()">⬇ Exportar CSV</button>
-  <button class="btn-primary" onclick="openAddModal()">+ Nuevo evento</button>
-  <button class="btn-secondary" onclick="window.print()">🖨 Imprimir</button>
-  <button class="btn-secondary" onclick="openTokenModal()" title="Configurar sincronización">⚙️ Sync</button>
-</div>
-
-<div class="tabs" id="tabs">
-  <div class="tab active" onclick="setTab('all',this)">Todos</div>
-  <div class="tab" onclick="setTab('vencido',this)">⛔ Vencidos</div>
-  <div class="tab" onclick="setTab('critico',this)">🔴 Críticos (≤7d)</div>
-  <div class="tab" onclick="setTab('proximo',this)">🟡 Próximos (≤30d)</div>
-  <div class="tab" onclick="setTab('ok',this)">🟢 Al día</div>
-</div>
-
-<div class="legend">
-  <span style="font-weight:600;color:#1a3a5c">Leyenda:</span>
-  <span class="legend-item"><span class="badge vencido">Vencido</span> Fecha superada</span>
-  <span class="legend-item"><span class="badge critico">Crítico</span> Vence en ≤7 días</span>
-  <span class="legend-item"><span class="badge proximo">Próximo</span> Vence en 8-30 días</span>
-  <span class="legend-item"><span class="badge ok">Al día</span> Más de 30 días</span>
-  <span class="legend-item"><span class="badge na">N/A</span> Sin fecha / No aplica</span>
-</div>
-
-<div class="top-bar">
-  <label>Hospital: <select id="filter-hospital" onchange="applyFilters()"><option value="">Todos</option></select></label>
-  <label>Tipo: <select id="filter-tipo" onchange="applyFilters()"><option value="">Todos</option></select></label>
-  <label>Estado: <select id="filter-estado" onchange="applyFilters()"><option value="">Todos</option></select></label>
-  <label>Buscar: <input type="text" id="filter-search" placeholder="Hospital, tipo, notas…" oninput="applyFilters()" style="width:180px"></label>
-  <button class="btn-secondary" onclick="clearFilters()">✕ Limpiar</button>
-</div>
-
-<div class="section">
-  <div class="table-wrap">
-    <table id="main-table">
-      <thead>
-        <tr>
-          <th onclick="sortTable('hospital')" style="cursor:pointer">Hospital ⇅</th>
-          <th onclick="sortTable('tipo')" style="cursor:pointer">Tipo de mantenimiento ⇅</th>
-          <th onclick="sortTable('fecha')" style="cursor:pointer">Próxima fecha ⇅</th>
-          <th onclick="sortTable('dias')" style="cursor:pointer">Días restantes ⇅</th>
-          <th>Estado</th>
-          <th>Notas</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody id="table-body"></tbody>
-    </table>
-  </div>
-</div>
-
-<div class="modal-overlay" id="modal-overlay">
-  <div class="modal">
-    <h3 id="modal-title">Nuevo evento de mantenimiento</h3>
-    <label>Hospital</label>
-    <input type="text" id="m-hospital" placeholder="Nombre del hospital">
-    <label>Tipo de mantenimiento</label>
-    <input type="text" id="m-tipo" placeholder="Ej: Desinfección RO1">
-    <label>Próxima fecha de vencimiento</label>
-    <input type="date" id="m-fecha">
-    <label>Notas (opcional)</label>
-    <textarea id="m-notas" placeholder="Observaciones, número de serie, etc."></textarea>
-    <div class="modal-actions">
-      <button class="btn-secondary" onclick="closeModal()">Cancelar</button>
-      <button class="btn-primary" onclick="saveEvent()">Guardar</button>
-    </div>
-  </div>
-</div>
-
-<div class="modal-overlay" id="token-modal">
-  <div class="modal">
-    <h3>⚙️ Configuración de sincronización</h3>
-    <p style="font-size:12px;color:#555;margin-top:4px">Introduce tu token de GitHub para sincronizar datos entre dispositivos.</p>
-    <label>Token de GitHub (ghp_...)</label>
-    <input type="password" id="token-input" placeholder="ghp_xxxxxxxxxxxx" autocomplete="off">
-    <p style="font-size:11px;color:#888;margin-top:6px">El token se guarda solo en este dispositivo (localStorage). Necesita permiso <code>repo</code>.</p>
-    <div class="modal-actions">
-      <button class="btn-danger" onclick="clearToken()">🗑 Eliminar token</button>
-      <button class="btn-secondary" onclick="closeTokenModal()">Cancelar</button>
-      <button class="btn-primary" onclick="saveToken()">Guardar</button>
-    </div>
-  </div>
-</div>
 <script>
 const TODAY = new Date();
 TODAY.setHours(0,0,0,0);
@@ -348,6 +10,10 @@ let sortAsc = true;
 let userSorted = false;
 let nextId = 1;
 let _insertOrder = 0;
+
+// Variables globales de control añadidas
+let _ghSha = null;
+let saveTimer = null;
 
 const GH_REPO   = 'yrvin1501/mantenimiento-dialisis';
 const GH_FILE   = 'data.json';
@@ -513,12 +179,16 @@ const RAW = [
   ["Santiago (AquaC)","Carbón","2023-10-25","Vencida - revisar"],
   ["Santiago (AquaC 2CHS6121)","CTS","2025-03-01","Fecha pasada - revisar"],
   ["Santiago (AquaC 2CHS6121)","Filtros","2023-10-25","Vencida - revisar"],
-  ["Santiago (AquaC 2CHS6121)","Carbón","2023-10-25","Vencida - revisar"],
-]
+  ["Santiago (AquaC 2CHS6121)","Carbón","2023-10-25","Vencida - revisar"]
+];
+
+// 🟢 SOLUCIÓN AL ERROR: Declaración e implementación de getToken()
+function getToken() {
+  return localStorage.getItem('github-token') || '';
+}
 
 function parseDateStr(s) {
   if (!s) return null;
-  // Parse as LOCAL date (not UTC) to avoid timezone offset shifting the day
   const parts = String(s).split('-');
   if (parts.length !== 3) return null;
   const d = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
@@ -551,7 +221,6 @@ function fmtDate(d) {
 
 function toInputDate(d) {
   if (!d) return '';
-  // Use local date parts to avoid UTC offset shifting the day
   const yy = d.getFullYear();
   const mm = String(d.getMonth() + 1).padStart(2, '0');
   const dd = String(d.getDate()).padStart(2, '0');
@@ -568,6 +237,7 @@ function loadInitialData() {
     tipo: r[1],
     fecha: parseDateStr(r[2]),
     fechaStr: r[2] || '',
+    notes: r[3] || '', // Mapeado a .notas internamente
     notas: r[3] || ''
   }));
 }
@@ -587,14 +257,15 @@ function serializeEvents() {
 function deserializeEvents(raw) {
   const data = JSON.parse(raw);
   if (!data || !Array.isArray(data.events) || data.events.length === 0) {
-    throw new Error('No events data');
+    throw new Error('No data structure parsed');
   }
   nextId = data.nextId || 1;
   _insertOrder = data._insertOrder || 0;
   events = data.events.map((e, i) => ({
     ...e,
     _order: e._order !== undefined ? e._order : i,
-    fecha: parseDateStr(e.fecha)
+    fecha: parseDateStr(e.fecha),
+    notas: e.notas || e.notes || ''
   }));
 }
 
@@ -607,18 +278,18 @@ async function ghGet() {
       { headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github.v3+json' } }
     );
     if (r.status === 404) return null;
-    if (!r.ok) throw new Error('GitHub ' + r.status);
+    if (!r.ok) throw new Error('GitHub Status ' + r.status);
     const j = await r.json();
     _ghSha = j.sha;
-    return atob(j.content.replace(/\n/g,''));
-  } catch(e) { return null; }
+    return decodeURIComponent(escape(atob(j.content.replace(/\n/g,''))));
+  } catch(e) { console.error(e); return null; }
 }
 
 async function ghPut(content) {
   const token = getToken();
   if (!token) return false;
   try {
-    const body = { message: 'Dashboard update', content: btoa(unescape(encodeURIComponent(content))), branch: GH_BRANCH };
+    const body = { message: 'Dashboard auto-update', content: btoa(unescape(encodeURIComponent(content))), branch: GH_BRANCH };
     if (_ghSha) body.sha = _ghSha;
     const r = await fetch(
       `https://api.github.com/repos/${GH_REPO}/contents/${GH_FILE}`,
@@ -628,54 +299,42 @@ async function ghPut(content) {
     const j = await r.json();
     _ghSha = j.content.sha;
     return true;
-  } catch(e) { console.error('ghPut:', e); return false; }
+  } catch(e) { console.error('ghPut error:', e); return false; }
 }
 
 async function saveToStorage() {
   const payload = serializeEvents();
   localStorage.setItem('dialisis-events', payload);
   const token = getToken();
-  if (!token) { showSaveIndicator('✓ Guardado local (sin token)'); return; }
+  if (!token) { showSaveIndicator('✓ Guardado local (sin sync)'); return; }
   showSaveIndicator('⏳ Sincronizando…');
   const ok = await ghPut(payload);
-  showSaveIndicator(ok ? '✓ Guardado y sincronizado' : '⚠ Guardado local, sin sync', !ok);
+  showSaveIndicator(ok ? '✓ Sincronizado con GitHub' : '⚠ Error al subir a GitHub', !ok);
 }
 
 async function loadFromStorage() {
-  // 1. Try GitHub API with token (authenticated = no CORS issues)
   const token = getToken();
   if (token) {
-    showSaveIndicator('⏳ Sincronizando…');
+    showSaveIndicator('⏳ Cargando desde GitHub…');
     const remote = await ghGet();
     if (remote) {
       try {
         deserializeEvents(remote);
         localStorage.setItem('dialisis-events', remote);
-        showSaveIndicator('✓ Sincronizado con GitHub');
+        showSaveIndicator('✓ Datos sincronizados');
         return true;
-      } catch(e) {}
+      } catch(e) { console.error(e); }
     }
   }
-  // 2. Fallback: localStorage
   const raw = localStorage.getItem('dialisis-events');
   if (raw) {
     try {
       deserializeEvents(raw);
-      showSaveIndicator('✓ Datos locales');
+      showSaveIndicator('✓ Datos locales cargados');
       return true;
-    } catch(e) {}
+    } catch(e) { console.error(e); }
   }
   return false;
-}
-
-function resetToDefault() {
-  if (!confirm('¿Restaurar los datos originales del Excel? Se perderán todos los cambios.')) return;
-  localStorage.removeItem('dialisis-events');
-  _ghSha = null;
-  loadInitialData();
-  buildFilters();
-  render();
-  showSaveIndicator('✓ Datos originales restaurados');
 }
 
 function showSaveIndicator(msg, warn) {
@@ -683,7 +342,7 @@ function showSaveIndicator(msg, warn) {
   if (!ind) {
     ind = document.createElement('span');
     ind.id = 'save-ind';
-    ind.style.cssText = 'font-size:12px;padding:3px 10px;border-radius:5px;margin-left:12px;transition:opacity 0.4s;';
+    ind.style.cssText = 'font-size:12px;padding:3px 10px;border-radius:5px;margin-left:12px;transition:opacity 0.4s;font-weight:500;';
     document.querySelector('.export-row').appendChild(ind);
   }
   ind.textContent = msg;
@@ -691,7 +350,7 @@ function showSaveIndicator(msg, warn) {
   ind.style.color = warn ? '#a32d2d' : '#3b6d11';
   ind.style.opacity = '1';
   clearTimeout(saveTimer);
-  saveTimer = setTimeout(() => { ind.style.opacity = '0'; }, 3000);
+  saveTimer = setTimeout(() => { ind.style.opacity = '0'; }, 4000);
 }
 
 function buildFilters() {
@@ -700,11 +359,35 @@ function buildFilters() {
   const fh = document.getElementById('filter-hospital');
   const ft = document.getElementById('filter-tipo');
   const fe = document.getElementById('filter-estado');
-  const prevH = fh.value, prevT = ft.value;
-  fh.innerHTML = '<option value="">Todos los hospitales</option>' + hospitals.map(h => `<option>${h}</option>`).join('');
-  ft.innerHTML = '<option value="">Todos los tipos</option>' + tipos.map(t => `<option>${t}</option>`).join('');
-  fe.innerHTML = '<option value="">Todos los estados</option><option value="vencido">Vencido</option><option value="critico">Crítico</option><option value="proximo">Próximo</option><option value="ok">Al día</option>';
-  fh.value = prevH; ft.value = prevT;
+  const prevH = fh.value, prevT = ft.value, prevE = fe.value;
+  
+  fh.innerHTML = '<option value="">Todos los hospitales</option>' + hospitals.map(h => `<option value="${h}">${h}</option>`).join('');
+  ft.innerHTML = '<option value="">Todos los tipos</option>' + tipos.map(t => `<option value="${t}">${t}</option>`).join('');
+  fe.innerHTML = '<option value="">Todos los estados</option><option value="vencido">⛔ Vencido</option><option value="critico">🔴 Crítico (≤7d)</option><option value="proximo">🟡 Próximo (≤30d)</option><option value="ok">🟢 Al día</option>';
+  
+  fh.value = prevH; ft.value = prevT; fe.value = prevE;
+}
+
+function applyFilters() {
+  renderTable();
+}
+
+function clearFilters() {
+  document.getElementById('filter-hospital').value = "";
+  document.getElementById('filter-tipo').value = "";
+  document.getElementById('filter-estado').value = "";
+  document.getElementById('filter-search').value = "";
+  currentTab = 'all';
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelector('.tabs .tab').classList.add('active');
+  renderTable();
+}
+
+function setTab(tabName, el) {
+  currentTab = tabName;
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  renderTable();
 }
 
 function filteredEvents() {
@@ -754,7 +437,7 @@ function renderKPIs() {
   document.getElementById('kpi-row').innerHTML = `
     <div class="kpi total"><div class="num">${events.length}</div><div class="lbl">Total eventos</div></div>
     <div class="kpi overdue"><div class="num">${overdue}</div><div class="lbl">⛔ Vencidos</div></div>
-    <div class="kpi" style=""><div class="num" style="color:#ba7517">${critico}</div><div class="lbl">🔴 Críticos (≤7d)</div></div>
+    <div class="kpi"><div class="num" style="color:#ba7517">${critico}</div><div class="lbl">🔴 Críticos (≤7d)</div></div>
     <div class="kpi soon"><div class="num" style="color:#854f0b">${proximo}</div><div class="lbl">🟡 Próximos (≤30d)</div></div>
     <div class="kpi ok"><div class="num">${ok}</div><div class="lbl">🟢 Al día</div></div>`;
 }
@@ -765,9 +448,9 @@ function renderAlerts() {
   const critico = events.filter(e => getStatus(daysFromToday(e.fecha)) === 'critico');
   let html = '';
   if (overdue.length)
-    html += `<div class="alert-banner danger"><span class="icon">⛔</span><strong>${overdue.length} evento(s) VENCIDO(S):</strong> ${overdue.slice(0,5).map(e=>`${e.hospital} — ${e.tipo}`).join(' | ')}${overdue.length>5?` y ${overdue.length-5} más…`:''}</div>`;
+    html += `<div class="alert-banner danger"><span class="icon">⛔</span><strong>${overdue.length} intervención(es) VENCIDA(S):</strong> ${overdue.slice(0,5).map(e=>`${e.hospital} (${e.tipo})`).join(' | ')}${overdue.length>5?` y ${overdue.length-5} más…`:''}</div>`;
   if (critico.length)
-    html += `<div class="alert-banner"><span class="icon">⚠️</span><strong>${critico.length} evento(s) CRÍTICO(S) (≤7 días):</strong> ${critico.slice(0,4).map(e=>`${e.hospital} — ${e.tipo} (${daysFromToday(e.fecha)}d)`).join(' | ')}${critico.length>4?` y ${critico.length-4} más…`:''}</div>`;
+    html += `<div class="alert-banner"><span class="icon">⚠️</span><strong>${critico.length} alerta(s) CRÍTICA(S) (≤7 días):</strong> ${critico.slice(0,4).map(e=>`${e.hospital} — ${e.tipo} (${daysFromToday(e.fecha)}d)`).join(' | ')}${critico.length>4?` y ${critico.length-4} más…`:''}</div>`;
   area.innerHTML = html;
 }
 
@@ -775,7 +458,7 @@ function renderTable() {
   const arr = sortedEvents(filteredEvents());
   const tbody = document.getElementById('table-body');
   if (!arr.length) {
-    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:32px;color:#888">No hay eventos con los filtros actuales.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:32px;color:#888">No hay registros coincidentes con los filtros indicados.</td></tr>`;
     return;
   }
   tbody.innerHTML = arr.map(ev => {
@@ -789,7 +472,7 @@ function renderTable() {
     return `<tr>
       <td><span class="hospital-tag">${ev.hospital}</span></td>
       <td>${ev.tipo}</td>
-      <td class="editable" onclick="editDate(${ev.id})" title="Clic para editar fecha">
+      <td class="editable" onclick="editDate(${ev.id})" title="Clic para modificar fecha rápidamente">
         <span id="date-disp-${ev.id}">${fmtDate(ev.fecha)}</span>
         <input type="date" class="inline-date" id="date-inp-${ev.id}" value="${ev.fecha ? toInputDate(ev.fecha) : ''}" style="display:none" onchange="commitDate(${ev.id})" onblur="cancelDate(${ev.id})">
       </td>
@@ -797,74 +480,61 @@ function renderTable() {
       <td><span class="badge ${status}">${statusLabel(status)}</span></td>
       <td>${notesHtml}</td>
       <td><div class="action-row">
-        <button class="icon-btn" onclick="openEditModal(${ev.id})" title="Editar">✏</button>
-        <button class="icon-btn del" onclick="deleteEvent(${ev.id})" title="Eliminar">🗑</button>
+        <button class="icon-btn" onclick="openEditModal(${ev.id}); event.stopPropagation();" title="Editar detalles">✏</button>
+        <button class="icon-btn del" onclick="deleteEvent(${ev.id}); event.stopPropagation();" title="Eliminar registro">🗑</button>
       </div></td>
     </tr>`;
   }).join('');
 }
 
-function render() { renderKPIs(); renderAlerts(); renderTable(); }
-
-function applyFilters() { renderTable(); }
-
-function clearFilters() {
-  document.getElementById('filter-hospital').value = '';
-  document.getElementById('filter-tipo').value = '';
-  document.getElementById('filter-estado').value = '';
-  document.getElementById('filter-search').value = '';
-  renderTable();
-}
-
-function setTab(tab, el) {
-  currentTab = tab;
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  el.classList.add('active');
-  renderTable();
-}
-
+// 🟢 EDICIÓN EN LÍNEA DE FECHAS
 function editDate(id) {
-  document.getElementById('date-disp-' + id).style.display = 'none';
-  document.getElementById('date-inp-' + id).style.display = 'inline-block';
-  document.getElementById('date-inp-' + id).focus();
-}
-
-function commitDate(id) {
-  const inp = document.getElementById('date-inp-' + id);
-  const ev  = events.find(e => e.id === id);
-  if (!ev) return;
-  ev.fecha    = parseDateStr(inp.value);
-  ev.fechaStr = inp.value;
-  saveToStorage();
-  render();
+  document.getElementById(`date-disp-${id}`).style.display = 'none';
+  const inp = document.getElementById(`date-inp-${id}`);
+  inp.style.display = 'inline-block';
+  inp.focus();
 }
 
 function cancelDate(id) {
-  const inp  = document.getElementById('date-inp-' + id);
-  const disp = document.getElementById('date-disp-' + id);
-  if (inp)  inp.style.display  = 'none';
-  if (disp) disp.style.display = '';
+  setTimeout(() => {
+    const inp = document.getElementById(`date-inp-${id}`);
+    if(inp) inp.style.display = 'none';
+    const disp = document.getElementById(`date-disp-${id}`);
+    if(disp) disp.style.display = 'inline';
+  }, 200);
 }
 
+function commitDate(id) {
+  const val = document.getElementById(`date-inp-${id}`).value;
+  const ev = events.find(e => e.id === id);
+  if (ev) {
+    ev.fecha = parseDateStr(val);
+    ev.fechaStr = val;
+    render();
+    saveToStorage();
+  }
+}
+
+// 🟢 MANEJO DE MODAL CRUD
 function openAddModal() {
   editingId = null;
-  document.getElementById('modal-title').textContent = 'Nuevo evento de mantenimiento';
-  document.getElementById('m-hospital').value = '';
-  document.getElementById('m-tipo').value = '';
-  document.getElementById('m-fecha').value = '';
-  document.getElementById('m-notas').value = '';
+  document.getElementById('modal-title').textContent = "Nuevo evento de mantenimiento";
+  document.getElementById('m-hospital').value = "";
+  document.getElementById('m-tipo').value = "";
+  document.getElementById('m-fecha').value = "";
+  document.getElementById('m-notas').value = "";
   document.getElementById('modal-overlay').classList.add('open');
 }
 
 function openEditModal(id) {
+  editingId = id;
   const ev = events.find(e => e.id === id);
   if (!ev) return;
-  editingId = id;
-  document.getElementById('modal-title').textContent = 'Editar evento';
+  document.getElementById('modal-title').textContent = "Modificar evento de mantenimiento";
   document.getElementById('m-hospital').value = ev.hospital;
-  document.getElementById('m-tipo').value     = ev.tipo;
-  document.getElementById('m-fecha').value    = ev.fecha ? toInputDate(ev.fecha) : '';
-  document.getElementById('m-notas').value    = ev.notas || '';
+  document.getElementById('m-tipo').value = ev.tipo;
+  document.getElementById('m-fecha').value = ev.fecha ? toInputDate(ev.fecha) : '';
+  document.getElementById('m-notas').value = ev.notas || '';
   document.getElementById('modal-overlay').classList.add('open');
 }
 
@@ -873,53 +543,50 @@ function closeModal() {
 }
 
 function saveEvent() {
-  const hospital  = document.getElementById('m-hospital').value.trim();
-  const tipo      = document.getElementById('m-tipo').value.trim();
-  const fechaStr  = document.getElementById('m-fecha').value;
-  const notas     = document.getElementById('m-notas').value.trim();
-  if (!hospital || !tipo) { alert('Hospital y Tipo son obligatorios.'); return; }
-  if (editingId !== null) {
-    // Edit in place — find by id and update WITHOUT changing _order
-    const ev = events.find(e => e.id === editingId);
-    ev.hospital = hospital;
-    ev.tipo     = tipo;
-    ev.fecha    = parseDateStr(fechaStr);
-    ev.fechaStr = fechaStr;
-    ev.notas    = notas;
+  const hosp = document.getElementById('m-hospital').value.trim();
+  const tipo = document.getElementById('m-tipo').value.trim();
+  const fech = document.getElementById('m-fecha').value;
+  const nots = document.getElementById('m-notas').value.trim();
+
+  if (!hosp || !tipo) { alert('Hospital y Tipo de mantenimiento son obligatorios'); return; }
+
+  if (editingId === null) {
+    events.push({
+      id: nextId++,
+      _order: _insertOrder++,
+      hospital: hosp,
+      tipo: tipo,
+      fecha: parseDateStr(fech),
+      fechaStr: fech,
+      notas: nots
+    });
   } else {
-    events.push({ id: nextId++, _order: _insertOrder++, hospital, tipo, fecha: parseDateStr(fechaStr), fechaStr, notas });
-    buildFilters();
+    const ev = events.find(e => e.id === editingId);
+    if (ev) {
+      ev.hospital = hosp;
+      ev.tipo = tipo;
+      ev.fecha = parseDateStr(fech);
+      ev.fechaStr = fech;
+      ev.notas = nots;
+    }
   }
   closeModal();
-  saveToStorage();
+  buildFilters();
   render();
+  saveToStorage();
 }
 
 function deleteEvent(id) {
-  if (!confirm('¿Eliminar este evento?')) return;
+  if (!confirm('¿Desea eliminar de forma definitiva esta tarea de mantenimiento?')) return;
   events = events.filter(e => e.id !== id);
-  saveToStorage();
+  buildFilters();
   render();
+  saveToStorage();
 }
 
-function exportCSV() {
-  const arr  = sortedEvents(filteredEvents());
-  const rows = [['Hospital','Tipo de mantenimiento','Próxima fecha','Días restantes','Estado','Notas']];
-  arr.forEach(ev => {
-    const days = daysFromToday(ev.fecha);
-    rows.push([ev.hospital, ev.tipo, fmtDate(ev.fecha), days !== null ? days : '', statusLabel(getStatus(days)), ev.notas||'']);
-  });
-  const csv  = rows.map(r => r.map(c => '"' + String(c).replace(/"/g,'""') + '"').join(',')).join('\n');
-  const blob = new Blob(['\uFEFF' + csv], { type:'text/csv;charset=utf-8;' });
-  const a    = document.createElement('a');
-  a.href     = URL.createObjectURL(blob);
-  a.download = 'mantenimiento_dialisis.csv';
-  a.click();
-}
-
+// 🟢 MANEJO DEL TOKEN MODAL (SYNC)
 function openTokenModal() {
-  const cur = getToken();
-  document.getElementById('token-input').value = cur ? cur.slice(0,8) + '…' : '';
+  document.getElementById('token-input').value = getToken();
   document.getElementById('token-modal').classList.add('open');
 }
 
@@ -927,98 +594,68 @@ function closeTokenModal() {
   document.getElementById('token-modal').classList.remove('open');
 }
 
-async function saveToken() {
-  const v = document.getElementById('token-input').value.trim();
-  if (v && !v.includes('…')) {
-    localStorage.setItem('gh_token', v);
-    closeTokenModal();
-    showSaveIndicator('⏳ Conectando con GitHub…');
-    // Try to load remote first; if empty, push local data
-    const remote = await ghGet();
-    if (remote && remote.trim() !== '{}' && remote.trim() !== '') {
-      try {
-        deserializeEvents(remote);
-        localStorage.setItem('dialisis-events', remote);
-        buildFilters();
-        render();
-        showSaveIndicator('✓ Datos cargados desde GitHub');
-        return;
-      } catch(e) {}
-    }
-    // No remote data — push current data up
-    await saveToStorage();
-    showSaveIndicator('✓ Token guardado y datos sincronizados');
+function saveToken() {
+  const tk = document.getElementById('token-input').value.trim();
+  if (tk) {
+    localStorage.setItem('github-token', tk);
+  } else {
+    localStorage.removeItem('github-token');
+  }
+  closeTokenModal();
+  loadFromStorage().then(() => {
     buildFilters();
     render();
-  } else {
-    closeTokenModal();
-  }
+  });
 }
 
 function clearToken() {
-  localStorage.removeItem('gh_token');
-  closeTokenModal();
-  showSaveIndicator('Token eliminado — modo local');
-}
-
-function showSyncBanner() {
-  if (document.getElementById('sync-banner')) return;
-  const b = document.createElement('div');
-  b.id = 'sync-banner';
-  b.style.cssText = 'background:#1a3a5c;color:#fff;padding:10px 20px;font-size:13px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;';
-  const span = document.createElement('span');
-  span.innerHTML = '🔗 <strong>Sin sincronización activa.</strong> Configura tu token de GitHub para sincronizar entre dispositivos.';
-  const btnConfig = document.createElement('button');
-  btnConfig.textContent = '⚙️ Configurar ahora';
-  btnConfig.style.cssText = 'background:#fff;color:#1a3a5c;border:none;border-radius:5px;padding:5px 12px;font-size:12px;font-weight:600;cursor:pointer';
-  btnConfig.onclick = function() { b.remove(); openTokenModal(); };
-  const btnClose = document.createElement('button');
-  btnClose.textContent = '✕';
-  btnClose.style.cssText = 'background:transparent;color:rgba(255,255,255,0.6);border:none;font-size:18px;cursor:pointer;margin-left:auto';
-  btnClose.onclick = function() { b.remove(); };
-  b.appendChild(span);
-  b.appendChild(btnConfig);
-  b.appendChild(btnClose);
-  document.querySelector('header').insertAdjacentElement('afterend', b);
-}
-
-window.onerror = function(msg, src, line, col, err) {
-  document.body.insertAdjacentHTML('afterbegin',
-    `<div style="background:red;color:#fff;padding:12px;font-size:13px;position:fixed;top:0;left:0;right:0;z-index:9999">
-      <strong>Error JS:</strong> ${msg} (línea ${line})<br>${err ? err.stack : ''}
-    </div>`);
-};
-
-(async () => {
-  try {
-    // Step 1: Always show initial Excel data immediately (never blank)
-    loadInitialData();
-    buildFilters();
+  if (confirm('¿Eliminar el token de sincronización almacenado localmente?')) {
+    localStorage.removeItem('github-token');
+    document.getElementById('token-input').value = "";
+    _ghSha = null;
+    closeTokenModal();
     render();
-
-    // Step 2: Try to load saved data (GitHub API or localStorage)
-    const restored = await loadFromStorage();
-    if (restored) {
-      buildFilters();
-      render();
-    } else {
-      if (getToken()) await saveToStorage();
-    }
-
-    if (!getToken()) showSyncBanner();
-  } catch(e) {
-    document.body.insertAdjacentHTML('afterbegin',
-      `<div style="background:red;color:#fff;padding:12px;font-size:13px;position:fixed;top:0;left:0;right:0;z-index:9999">
-        <strong>Error en arranque:</strong> ${e.message}<br><pre style="font-size:11px">${e.stack}</pre>
-      </div>`);
-    console.error('Boot error:', e);
-    // Last resort: force render with initial data
-    try { loadInitialData(); buildFilters(); render(); } catch(e2) {}
   }
-})();
+}
 
+// 🟢 EXPORTACIÓN A CSV
+function exportCSV() {
+  const activeEvents = filteredEvents();
+  let csv = '\uFEFFHospital;Tipo de Mantenimiento;Fecha de Vencimiento;Dias Restantes;Estado;Notas\n';
+  activeEvents.forEach(e => {
+    const days = daysFromToday(e.fecha);
+    const dDisp = days === null ? 'N/A' : days;
+    const sDisp = statusLabel(getStatus(days));
+    csv += `"${e.hospital.replace(/"/g,'""')}";"${e.tipo.replace(/"/g,'""')}";"${e.fecha ? toInputDate(e.fecha) : ''}";"${dDisp}";"${sDisp}";"${(e.notas||'').replace(/"/g,'""')}"\n`;
+  });
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.setAttribute("download", `control_vencimientos_dialisis_${toInputDate(new Date())}.csv`);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
 
+// 🟢 ARRANQUE INICIAL AL CARGAR EL DOM
+window.addEventListener('DOMContentLoaded', async () => {
+  document.getElementById('today-display').textContent = TODAY.toLocaleDateString('es-ES', { 
+    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
+  });
 
+  const success = await loadFromStorage();
+  if (!success) {
+    loadInitialData();
+  }
+  buildFilters();
+  render();
+});
+
+function render() {
+  renderKPIs();
+  renderAlerts();
+  renderTable();
+}
 </script>
 </body>
 </html>
