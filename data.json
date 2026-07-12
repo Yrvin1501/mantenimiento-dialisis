@@ -426,15 +426,6 @@
       "notas": ""
     },
     {
-      "id": 61,
-      "_order": 60,
-      "hospital": "Santiago A",
-      "tipo": "CTS Osmosis 1",
-      "fecha": "2027-02-10",
-      "fechaStr": "2027-02-10",
-      "notas": ""
-    },
-    {
       "id": 62,
       "_order": 61,
       "hospital": "Txagorritxu",
