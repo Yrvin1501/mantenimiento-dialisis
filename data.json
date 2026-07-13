@@ -734,11 +734,11 @@
     {
       "id": 124,
       "_order": 123,
-      "hospital": "Servet (rAqua C H 5)",
+      "hospital": "MIGUEL SERVET",
       "tipo": "CTS",
       "fecha": "2027-12-15",
       "fechaStr": "2027-12-15",
-      "notas": ""
+      "notas": "(Aqua C H 5)"
     },
     {
       "id": 125,
