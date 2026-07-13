@@ -1,6 +1,6 @@
 {
-  "nextId": 161,
-  "_insertOrder": 160,
+  "nextId": 162,
+  "_insertOrder": 161,
   "events": [
     {
       "id": 1,
@@ -1000,6 +1000,15 @@
       "fecha": "2024-12-23",
       "fechaStr": "2024-12-23",
       "notas": "(Aqua WTU)"
+    },
+    {
+      "id": 161,
+      "_order": 160,
+      "hospital": "CLINICO",
+      "tipo": "CTS",
+      "fecha": "2026-07-05",
+      "fechaStr": "2026-07-05",
+      "notas": "(Aqua Uno 5)/6014"
     }
   ]
 }
