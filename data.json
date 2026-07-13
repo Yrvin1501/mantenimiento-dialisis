@@ -770,11 +770,11 @@
     {
       "id": 128,
       "_order": 127,
-      "hospital": "Servet (Aqua C H 6)",
+      "hospital": "MIGUEL SERVET",
       "tipo": "CTS",
       "fecha": "2027-12-15",
       "fechaStr": "2027-12-15",
-      "notas": ""
+      "notas": "(Aqua C H 6)"
     },
     {
       "id": 129,
