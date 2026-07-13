@@ -878,11 +878,11 @@
     {
       "id": 140,
       "_order": 139,
-      "hospital": "Clinico (Aqua C 3)",
+      "hospital": "CLINICO",
       "tipo": "CTS",
       "fecha": "2027-11-11",
       "fechaStr": "2027-11-11",
-      "notas": ""
+      "notas": "(Aqua C 3)"
     },
     {
       "id": 141,
