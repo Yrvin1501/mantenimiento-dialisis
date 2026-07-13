@@ -1,6 +1,6 @@
 {
-  "nextId": 168,
-  "_insertOrder": 167,
+  "nextId": 169,
+  "_insertOrder": 168,
   "events": [
     {
       "id": 1,
@@ -1062,6 +1062,15 @@
       "tipo": "Cambio carbón 2",
       "fecha": "2026-01-01",
       "fechaStr": "2026-01-01",
+      "notas": ""
+    },
+    {
+      "id": 168,
+      "_order": 167,
+      "hospital": "H. SAN JUAN DE DIOS",
+      "tipo": "CTS",
+      "fecha": "2027-02-10",
+      "fechaStr": "2027-02-10",
       "notas": ""
     }
   ]
