@@ -1,6 +1,6 @@
 {
-  "nextId": 164,
-  "_insertOrder": 163,
+  "nextId": 165,
+  "_insertOrder": 164,
   "events": [
     {
       "id": 1,
@@ -1024,6 +1024,15 @@
       "_order": 162,
       "hospital": "CLINICO",
       "tipo": "Carbón",
+      "fecha": "2025-11-13",
+      "fechaStr": "2025-11-13",
+      "notas": "(Aqua Uno 5)/6014"
+    },
+    {
+      "id": 164,
+      "_order": 163,
+      "hospital": "CLINICO",
+      "tipo": "Desinfección quimica",
       "fecha": "2025-11-13",
       "fechaStr": "2025-11-13",
       "notas": "(Aqua Uno 5)/6014"
