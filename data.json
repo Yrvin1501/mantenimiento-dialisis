@@ -626,11 +626,11 @@
     {
       "id": 112,
       "_order": 111,
-      "hospital": "Servet (Aqua Uno 2)",
+      "hospital": "MIGUEL SERVET",
       "tipo": "CTS",
       "fecha": "2026-08-27",
       "fechaStr": "2026-08-27",
-      "notas": ""
+      "notas": "(Aqua Uno 2)"
     },
     {
       "id": 113,
