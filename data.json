@@ -914,11 +914,11 @@
     {
       "id": 144,
       "_order": 143,
-      "hospital": "Clinico (Aqua C 6)",
+      "hospital": "CLINICO",
       "tipo": "CTS",
       "fecha": "2026-07-05",
       "fechaStr": "2026-07-05",
-      "notas": ""
+      "notas": "(Aqua C 6)"
     },
     {
       "id": 145,
