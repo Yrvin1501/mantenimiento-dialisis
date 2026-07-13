@@ -851,11 +851,11 @@
     {
       "id": 137,
       "_order": 136,
-      "hospital": "Servet (Aqua Uno 5)",
+      "hospital": "MIGUEL SERVET",
       "tipo": "Filtros",
-      "fecha": "2026-01-01",
-      "fechaStr": "2026-01-01",
-      "notas": ""
+      "fecha": null,
+      "fechaStr": "",
+      "notas": "Infantil alquilada 4680"
     },
     {
       "id": 138,
