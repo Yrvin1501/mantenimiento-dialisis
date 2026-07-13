@@ -1004,11 +1004,11 @@
     {
       "id": 154,
       "_order": 153,
-      "hospital": "H. HUESCA (Aqua WTU)",
+      "hospital": "H. HUESCA",
       "tipo": "Carbón",
       "fecha": "2024-12-23",
       "fechaStr": "2024-12-23",
-      "notas": "Vencida - revisar"
+      "notas": "(Aqua WTU)"
     }
   ]
 }
