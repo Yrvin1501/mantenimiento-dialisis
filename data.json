@@ -950,11 +950,11 @@
     {
       "id": 148,
       "_order": 147,
-      "hospital": "Clinico (Aqua Uno 4)",
+      "hospital": "CLINICO",
       "tipo": "CTS",
       "fecha": "2027-11-06",
       "fechaStr": "2027-11-06",
-      "notas": ""
+      "notas": "(Aqua Uno 4)"
     },
     {
       "id": 149,
