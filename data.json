@@ -968,11 +968,11 @@
     {
       "id": 150,
       "_order": 149,
-      "hospital": "Clinico (Aqua Uno 4)",
+      "hospital": "CLINICO",
       "tipo": "Carbón",
       "fecha": "2026-04-01",
       "fechaStr": "2026-04-01",
-      "notas": ""
+      "notas": "(Aqua Uno 4)"
     },
     {
       "id": 151,
