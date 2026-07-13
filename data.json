@@ -1,6 +1,6 @@
 {
-  "nextId": 169,
-  "_insertOrder": 168,
+  "nextId": 170,
+  "_insertOrder": 169,
   "events": [
     {
       "id": 1,
@@ -1069,6 +1069,15 @@
       "_order": 167,
       "hospital": "H. SAN JUAN DE DIOS",
       "tipo": "CTS",
+      "fecha": "2027-02-10",
+      "fechaStr": "2027-02-10",
+      "notas": ""
+    },
+    {
+      "id": 169,
+      "_order": 168,
+      "hospital": "H. SAN JUAN DE DIOS",
+      "tipo": "CTS Osmosis 2",
       "fecha": "2027-02-10",
       "fechaStr": "2027-02-10",
       "notas": ""
