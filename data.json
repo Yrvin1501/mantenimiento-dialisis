@@ -941,11 +941,11 @@
     {
       "id": 147,
       "_order": 146,
-      "hospital": "Clinico (Aqua C 6)",
+      "hospital": "CLINICO",
       "tipo": "Desinfección química",
       "fecha": "2026-04-01",
       "fechaStr": "2026-04-01",
-      "notas": ""
+      "notas": "(Aqua C 6)"
     },
     {
       "id": 148,
