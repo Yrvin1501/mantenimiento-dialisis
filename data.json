@@ -860,11 +860,11 @@
     {
       "id": 138,
       "_order": 137,
-      "hospital": "Servet (Aqua Uno 5)",
+      "hospital": "MIGUEL SERVET",
       "tipo": "Carbón",
-      "fecha": "2025-11-01",
-      "fechaStr": "2025-11-01",
-      "notas": "Verificar"
+      "fecha": null,
+      "fechaStr": "",
+      "notas": "Infantil alquilada 4680"
     },
     {
       "id": 139,
