@@ -707,11 +707,11 @@
     {
       "id": 121,
       "_order": 120,
-      "hospital": "Servet (Aqua Uno 4)",
+      "hospital": "MIGUEL SERVET",
       "tipo": "Filtros",
-      "fecha": "2026-01-01",
-      "fechaStr": "2026-01-01",
-      "notas": ""
+      "fecha": "2026-12-01",
+      "fechaStr": "2026-12-01",
+      "notas": "(Aqua Uno 4)"
     },
     {
       "id": 122,
