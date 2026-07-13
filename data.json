@@ -743,11 +743,11 @@
     {
       "id": 125,
       "_order": 124,
-      "hospital": "Servet (rAqua C H 5)",
+      "hospital": "MIGUEL SERVET",
       "tipo": "Filtros",
-      "fecha": "2025-12-01",
-      "fechaStr": "2025-12-01",
-      "notas": "Verificar"
+      "fecha": "2026-12-01",
+      "fechaStr": "2026-12-01",
+      "notas": "(Aqua C H 5)"
     },
     {
       "id": 126,
