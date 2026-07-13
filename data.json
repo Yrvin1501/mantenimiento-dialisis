@@ -797,11 +797,11 @@
     {
       "id": 131,
       "_order": 130,
-      "hospital": "Servet (Aqua C H 6)",
+      "hospital": "MIGUEL SERVET",
       "tipo": "Desinfección química",
       "fecha": "2026-01-01",
       "fechaStr": "2026-01-01",
-      "notas": ""
+      "notas": "(Aqua C H 6)"
     },
     {
       "id": 132,
