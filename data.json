@@ -995,11 +995,11 @@
     {
       "id": 153,
       "_order": 152,
-      "hospital": "H. HUESCA (Aqua WTU)",
+      "hospital": "H. HUESCA",
       "tipo": "Filtros",
       "fecha": "2024-12-23",
       "fechaStr": "2024-12-23",
-      "notas": "Vencida - revisar"
+      "notas": "(Aqua WTU)"
     },
     {
       "id": 154,
