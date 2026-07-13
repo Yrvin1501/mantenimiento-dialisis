@@ -788,11 +788,11 @@
     {
       "id": 130,
       "_order": 129,
-      "hospital": "Servet (Aqua C H 6)",
+      "hospital": "MIGUEL SERVET",
       "tipo": "Carbón",
       "fecha": "2026-01-01",
       "fechaStr": "2026-01-01",
-      "notas": ""
+      "notas": "(Aqua C H 6)"
     },
     {
       "id": 131,
