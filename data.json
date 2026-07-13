@@ -608,11 +608,11 @@
     {
       "id": 110,
       "_order": 109,
-      "hospital": "Servet (Aqua Uno 1)",
+      "hospital": "MIGUEL SERVET",
       "tipo": "Carbón",
       "fecha": "2026-01-01",
       "fechaStr": "2026-01-01",
-      "notas": "Verificar"
+      "notas": "(Aqua Uno 1)"
     },
     {
       "id": 111,
