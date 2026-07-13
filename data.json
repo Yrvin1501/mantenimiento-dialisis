@@ -896,11 +896,11 @@
     {
       "id": 142,
       "_order": 141,
-      "hospital": "Clinico (Aqua C 3)",
+      "hospital": "CLINICO",
       "tipo": "Carbón",
       "fecha": "2026-04-01",
       "fechaStr": "2026-04-01",
-      "notas": ""
+      "notas": "(Aqua C 3)"
     },
     {
       "id": 143,
