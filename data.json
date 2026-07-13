@@ -959,11 +959,11 @@
     {
       "id": 149,
       "_order": 148,
-      "hospital": "Clinico (Aqua Uno 4)",
+      "hospital": "CLINICO",
       "tipo": "Filtros",
       "fecha": "2026-04-01",
       "fechaStr": "2026-04-01",
-      "notas": ""
+      "notas": "(Aqua Uno 4)"
     },
     {
       "id": 150,
