@@ -986,11 +986,11 @@
     {
       "id": 152,
       "_order": 151,
-      "hospital": "H. HUESCA (Aqua WTU)",
+      "hospital": "H. HUESCA",
       "tipo": "CTS",
       "fecha": "2026-07-09",
       "fechaStr": "2026-07-09",
-      "notas": ""
+      "notas": "(Aqua WTU)"
     },
     {
       "id": 153,
