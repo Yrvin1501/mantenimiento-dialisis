@@ -923,11 +923,11 @@
     {
       "id": 145,
       "_order": 144,
-      "hospital": "Clinico (Aqua C 6)",
+      "hospital": "CLINICO",
       "tipo": "Filtros",
       "fecha": "2025-11-01",
       "fechaStr": "2025-11-01",
-      "notas": "Verificar"
+      "notas": "(Aqua C 6)"
     },
     {
       "id": 146,
