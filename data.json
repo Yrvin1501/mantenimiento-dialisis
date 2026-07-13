@@ -1,6 +1,6 @@
 {
-  "nextId": 171,
-  "_insertOrder": 170,
+  "nextId": 172,
+  "_insertOrder": 171,
   "events": [
     {
       "id": 1,
@@ -1089,6 +1089,15 @@
       "tipo": "CTS  CDS 03",
       "fecha": "2027-01-01",
       "fechaStr": "2027-01-01",
+      "notas": ""
+    },
+    {
+      "id": 171,
+      "_order": 170,
+      "hospital": "H. SAN JUAN DE DIOS",
+      "tipo": "Cambio filtros Pretratamiento",
+      "fecha": "2025-06-16",
+      "fechaStr": "2025-06-16",
       "notas": ""
     }
   ]
