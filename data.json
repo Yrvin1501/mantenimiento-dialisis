@@ -1,6 +1,6 @@
 {
-  "nextId": 166,
-  "_insertOrder": 165,
+  "nextId": 167,
+  "_insertOrder": 166,
   "events": [
     {
       "id": 1,
@@ -1044,6 +1044,15 @@
       "tipo": "Desinfección RO1",
       "fecha": "2026-08-05",
       "fechaStr": "2026-08-05",
+      "notas": ""
+    },
+    {
+      "id": 166,
+      "_order": 165,
+      "hospital": "H. SAN JUAN DE DIOS",
+      "tipo": "Cambio carbón 1",
+      "fecha": "2027-06-07",
+      "fechaStr": "2027-06-07",
       "notas": ""
     }
   ]
