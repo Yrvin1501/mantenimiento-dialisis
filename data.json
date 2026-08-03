@@ -844,8 +844,8 @@
       "_order": 136,
       "hospital": "MIGUEL SERVET",
       "tipo": "Filtros",
-      "fecha": null,
-      "fechaStr": "",
+      "fecha": "2027-01-27",
+      "fechaStr": "2027-01-27",
       "notas": "Infantil alquilada 4680"
     },
     {
