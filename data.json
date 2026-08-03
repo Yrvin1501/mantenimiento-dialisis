@@ -862,8 +862,8 @@
       "_order": 138,
       "hospital": "MIGUEL SERVET",
       "tipo": "Desinfección química",
-      "fecha": null,
-      "fechaStr": "",
+      "fecha": "2028-07-27",
+      "fechaStr": "2028-07-27",
       "notas": "Infantil alquilada 4680"
     },
     {
