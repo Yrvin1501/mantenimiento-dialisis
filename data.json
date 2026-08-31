@@ -1,6 +1,6 @@
 {
-  "nextId": 176,
-  "_insertOrder": 175,
+  "nextId": 177,
+  "_insertOrder": 176,
   "events": [
     {
       "id": 1,
@@ -1135,6 +1135,15 @@
       "fecha": "2028-08-31",
       "fechaStr": "2028-08-31",
       "notas": "Aqua B Plus"
+    },
+    {
+      "id": 176,
+      "_order": 175,
+      "hospital": "MIGUEL SERVET INFANT",
+      "tipo": "Cambio de FiltrosdePretratamiento",
+      "fecha": "2027-02-28",
+      "fechaStr": "2027-02-28",
+      "notas": ""
     }
   ]
 }
