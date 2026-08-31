@@ -1,6 +1,6 @@
 {
-  "nextId": 175,
-  "_insertOrder": 174,
+  "nextId": 176,
+  "_insertOrder": 175,
   "events": [
     {
       "id": 1,
@@ -1122,10 +1122,19 @@
       "id": 174,
       "_order": 173,
       "hospital": "MIGUEL SERVET INFANT",
-      "tipo": "CTS",
+      "tipo": "CTS Osmosis AquaBPlus",
       "fecha": "2028-08-31",
       "fechaStr": "2028-08-31",
       "notas": "Aqua B"
+    },
+    {
+      "id": 175,
+      "_order": 174,
+      "hospital": "MIGUEL SERVET INFANT",
+      "tipo": "CTS Pretratamiento",
+      "fecha": "2028-08-31",
+      "fechaStr": "2028-08-31",
+      "notas": ""
     }
   ]
 }
