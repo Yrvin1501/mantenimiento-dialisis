@@ -1,6 +1,6 @@
 {
-  "nextId": 174,
-  "_insertOrder": 173,
+  "nextId": 175,
+  "_insertOrder": 174,
   "events": [
     {
       "id": 1,
@@ -1114,6 +1114,15 @@
       "_order": 172,
       "hospital": "MIGUEL SERVET INFANT",
       "tipo": "Cambio carbón 1",
+      "fecha": "2028-08-31",
+      "fechaStr": "2028-08-31",
+      "notas": ""
+    },
+    {
+      "id": 174,
+      "_order": 173,
+      "hospital": "MIGUEL SERVET INFANT",
+      "tipo": "CTS",
       "fecha": "2028-08-31",
       "fechaStr": "2028-08-31",
       "notas": ""
