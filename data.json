@@ -1,6 +1,6 @@
 {
-  "nextId": 172,
-  "_insertOrder": 171,
+  "nextId": 173,
+  "_insertOrder": 172,
   "events": [
     {
       "id": 1,
@@ -1098,6 +1098,15 @@
       "tipo": "Cambio filtros Pretratamiento",
       "fecha": "2025-06-16",
       "fechaStr": "2025-06-16",
+      "notas": ""
+    },
+    {
+      "id": 172,
+      "_order": 171,
+      "hospital": "MIGUEL SERVET INFANTIL",
+      "tipo": "Desinfeccion RO1",
+      "fecha": "2027-02-28",
+      "fechaStr": "2027-02-28",
       "notas": ""
     }
   ]
