@@ -1,6 +1,6 @@
 {
-  "nextId": 173,
-  "_insertOrder": 172,
+  "nextId": 174,
+  "_insertOrder": 173,
   "events": [
     {
       "id": 1,
@@ -1108,6 +1108,15 @@
       "fecha": "2027-02-28",
       "fechaStr": "2027-02-28",
       "notas": "AquaB plus"
+    },
+    {
+      "id": 173,
+      "_order": 172,
+      "hospital": "MIGUEL SERVET INFANT",
+      "tipo": "Cambio carbón 1",
+      "fecha": "2028-08-31",
+      "fechaStr": "2028-08-31",
+      "notas": ""
     }
   ]
 }
