@@ -1,6 +1,6 @@
 {
-  "nextId": 177,
-  "_insertOrder": 176,
+  "nextId": 178,
+  "_insertOrder": 177,
   "events": [
     {
       "id": 1,
@@ -1144,6 +1144,15 @@
       "fecha": "2027-02-28",
       "fechaStr": "2027-02-28",
       "notas": "Aqua B plus"
+    },
+    {
+      "id": 177,
+      "_order": 176,
+      "hospital": "H. SAN JUAN DE DIOS",
+      "tipo": "Cambio de Membranas",
+      "fecha": null,
+      "fechaStr": "",
+      "notas": ""
     }
   ]
 }
